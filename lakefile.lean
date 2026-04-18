@@ -8,3 +8,8 @@ require verso from git
 
 @[default_target]
 lean_lib PLFA
+
+lean_lib Book
+
+lean_exe plfaBook where
+  root := `BookMain
