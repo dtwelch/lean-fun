@@ -7,28 +7,30 @@ TEX_CACHE_DIR ?= /tmp/lean-fun-texmf-cache
 all: build
 
 build:
-	lake build
+	@lake -q build
 
-tex:
-	lake build PLFA:literate
-	lake exe plfaBook --output "$(OUT_DIR)" --with-tex --without-html-single --without-html-multi
+tex: build
+	@lake -q exe plfaBook --output "$(OUT_DIR)" --with-tex --without-html-single --without-html-multi
 
-book:
-	rm -rf "$(OUT_DIR)"
-	PATH="$(dir $(LATEX_BIN)):$$PATH" ; \
-	lake build PLFA:literate ; \
-	lake exe plfaBook --output "$(OUT_DIR)" --with-tex --without-html-single --without-html-multi ; \
+book: build
+	@rm -rf "$(OUT_DIR)"
+	@PATH="$(dir $(LATEX_BIN)):$$PATH" ; \
+	lake -q exe plfaBook --output "$(OUT_DIR)" --with-tex --without-html-single --without-html-multi ; \
 	mkdir -p "$(TEX_CACHE_DIR)" ; \
 	cd "$(OUT_DIR)/tex" && \
 	TEXMFCACHE="$(TEX_CACHE_DIR)" TEXMFVAR="$(TEX_CACHE_DIR)" TEXMFSYSVAR="$(TEX_CACHE_DIR)" \
-	"$(LATEX_BIN)" -interaction=nonstopmode -halt-on-error main.tex && \
+	"$(LATEX_BIN)" -interaction=batchmode -halt-on-error main.tex >/dev/null 2>&1 && \
 	TEXMFCACHE="$(TEX_CACHE_DIR)" TEXMFVAR="$(TEX_CACHE_DIR)" TEXMFSYSVAR="$(TEX_CACHE_DIR)" \
-	"$(LATEX_BIN)" -interaction=nonstopmode -halt-on-error main.tex && \
+	"$(LATEX_BIN)" -interaction=batchmode -halt-on-error main.tex >/dev/null 2>&1 && \
 	TEXMFCACHE="$(TEX_CACHE_DIR)" TEXMFVAR="$(TEX_CACHE_DIR)" TEXMFSYSVAR="$(TEX_CACHE_DIR)" \
-	"$(LATEX_BIN)" -interaction=nonstopmode -halt-on-error main.tex
+	"$(LATEX_BIN)" -interaction=batchmode -halt-on-error main.tex >/dev/null 2>&1 || { \
+		printf 'latex failed; see %s/tex/main.log\n' "$(OUT_DIR)" ; \
+		exit 1 ; \
+	}
+	printf 'pdf: %s/tex/main.pdf\n' "$(OUT_DIR)"
 
 pdf: book
 
 clean:
-	lake clean
-	rm -rf _out
+	@lake clean
+	@rm -rf _out
