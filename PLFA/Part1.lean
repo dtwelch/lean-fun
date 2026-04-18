@@ -1,8 +1,4 @@
 import PLFA.Part1.Naturals
 
-/-!
-# Part 1
-
-Add chapter files under `PLFA/Part1/` and import them here as you work
-through the early PLFA material.
--/
+-- add chapter files under `PLFA/Part1/` and import here when
+-- working through the early PLFA material
