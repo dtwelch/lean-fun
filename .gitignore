@@ -1,4 +1,6 @@
-/.lake
+/.lake/
+/_out/
+/.verso/
 /.idea/
 *.swp
 .DS_Store

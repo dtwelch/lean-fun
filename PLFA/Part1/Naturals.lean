@@ -1,3 +1,12 @@
+set_option doc.verso true
+
+/-!
+# Naturals
+
+This is the first scratch chapter: a unary natural number type and a recursive
+definition of addition.
+-/
+
 namespace PLFA.Part1.Naturals
 
 inductive ℕ : Type where
