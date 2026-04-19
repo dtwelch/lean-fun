@@ -196,3 +196,13 @@ Again, rewriting turns the definition into two familiar equations:
 (1 + m) * n  =  n + (m * n)
 ```
 
+# Exercise `*-example` (practice)
+
+Compute `3 * 4` writing out your reasoning as a chain of equations using the equations
+for `*`. You do not need to step through the evaluation of `+`
+example 3 * 4 = 12 :=
+    calc
+        (suc 2) * 4                 := rfl
+        _ = (suc (suc 1)) * 4       := rfl
+        _ = (suc (suc (suc 0))) * 4 := rfl
+        _ = 4 + (suc (suc (suc 0)) * n)
