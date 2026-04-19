@@ -64,10 +64,13 @@ def seven : ℕ :=
 ```
 # Unpacking the inference rules
 
-```lean
-def plus : ℕ -> ℕ -> ℕ
-| .zero, n => n
-| .suc m, n => .suc (plus m n)
+Let's unpack the Lean definition. the keyword `inductive` tells us this is an
+inductive definition, that is, we are defining a new datatype with constructors.
+The phrase:
 ```
+ℕ : Type
+```
+tells us that ℕ is the name of the new data, type and that it is a `Type`, which
+is the way in Lean of saying that it is a type
 
 hello.
