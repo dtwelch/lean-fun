@@ -2,6 +2,8 @@
 
 meager stab at working through some Programming Foundations in Agda (only here in Lean)
 original text: https://plfa.github.io/
+NOTE: in certain cases some of the surrounding text is pulled from the PLFA book verbatim 
+(all credit goes to the original PLFA book authors)
 
 main bits:
 
