@@ -145,17 +145,38 @@ In its most general form, associativity is written
 ```
 meaning the location of the parentheses is irrelevant.
 
-An example of how we can use these constructors:
+An example of how we can use these constructors (better more illustrative
+example second I think):
 
 ```lean
-example : 3 + 2 = (5 : ℕ) :=
+example : 3 + 2 = 5 :=
   calc
       3 + 2
       = .suc (2 + 2)                 := rfl
       _ = .suc (.suc (1 + 2))        := rfl
       _ = .suc (.suc (.suc (0 + 2))) := rfl
       _ = .suc (.suc (.suc 2))       := rfl
-      _ = (5 : ℕ)                    := rfl
+      _ = 5                          := rfl
+```
+
+Note we could've expressed the theorem like so if we wanted to
+make it more clear in the local context that these literals are formed via our
+`ℕ` type like so: `example : 3 + 2 = (5 : ℕ)`
+
+Here's another version closer to the original PLFA text:
+
+```lean
+section
+open ℕ  -- so we don't need dots in front of each ctor
+example : 2 + 3 = 5 :=
+  calc
+      2 + 3
+      = (suc (suc zero)) + (suc (suc (suc zero)))   := rfl
+      _ = suc ((suc zero) + (suc (suc (suc zero)))) := rfl
+      _ = suc (suc (zero + (suc (suc (suc zero))))) := rfl
+      _ = suc (suc (suc (suc (suc zero))))          := rfl
+      _ = 5                                         := rfl
+end
 ```
 
 
