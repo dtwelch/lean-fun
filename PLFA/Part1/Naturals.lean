@@ -129,7 +129,7 @@ macro_rules
 The first line of `plus` gives its type: `ℕ -> ℕ -> ℕ`, which indicates that
 the `plus` function accepts two naturals and returns a natural. The infix
 notation allows us to write plus using the usual infix `+` notation. The
-`priority` equals high bit makes it more likely that our overloaded definition of
-`+` for our custom type will get resolved to ours based on the context
-(args, etc.)
+`priority := high` bit makes it more likely that uses of
+`+` will get resolved to our custom our `plus` function over our own naturals
+(`ℕ`) based on the context.
 
