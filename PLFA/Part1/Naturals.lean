@@ -133,3 +133,29 @@ notation allows us to write plus using the usual infix `+` notation. The
 `+` will get resolved to our custom `plus` function (for our own naturals
 number type (`ℕ`) based on the surrounding context.
 
+If we write zero as `0` and `suc m` as `1 + m`, the definition turns into two familiar equations:
+```
+ 0       + n  =  n
+ (1 + m) + n  =  1 + (m + n)
+```
+The first follows because zero is an identity for addition, and the second because addition is associative.
+In its most general form, associativity is written
+```
+(m + n) + p = m + (n + p)
+```
+meaning the location of the parentheses is irrelevant.
+
+An example of how we can use these constructors:
+
+```lean
+example : 3 + 2 = (5 : ℕ) :=
+  calc
+      3 + 2
+      = .suc (2 + 2)                 := rfl
+      _ = .suc (.suc (1 + 2))        := rfl
+      _ = .suc (.suc (.suc (0 + 2))) := rfl
+      _ = .suc (.suc (.suc 2))       := rfl
+      _ = (5 : ℕ)                    := rfl
+```
+
+
