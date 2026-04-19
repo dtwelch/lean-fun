@@ -130,6 +130,6 @@ The first line of `plus` gives its type: `ℕ -> ℕ -> ℕ`, which indicates th
 the `plus` function accepts two naturals and returns a natural. The infix
 notation allows us to write plus using the usual infix `+` notation. The
 `priority := high` bit makes it more likely that uses of
-`+` will get resolved to our custom our `plus` function over our own naturals
-(`ℕ`) based on the context.
+`+` will get resolved to our custom `plus` function (for our own naturals
+number type (`ℕ`) based on the surrounding context.
 
