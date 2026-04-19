@@ -5,26 +5,67 @@ open Verso.Genre.Manual.InlineLean
 
 #doc (Manual) "Naturals" =>
 
-This is the first scratch chapter: a unary natural number type and a recursive
-definition of addition (the `suc`essor function).
-
-```lean
-inductive ℕ : Type where
-  | zero : ℕ
-  | suc  : ℕ -> ℕ
+Most are familiar with the natural numbers:
 ```
-The set of natural numbers `ℕ` is inifite and we say that `0`, `1`, `2`, `3`,
-and are values of type `ℕ` (otherwise written: `0 : ℕ`, `1 : ℕ`, etc.).
+0
+1
+2
+3
+...
+```
+and so on. The set of natural numbers `ℕ` is inifite and we say that `0`, `1`, `2`, `3`,
+and are *values* of type `ℕ` (otherwise indicated with: `0 : ℕ`,  `1 : ℕ`,  etc.).
 
 Although there are infinitely many naturals, yet we can write down its
 definition in just a few lines. Here it is as a pair of inference rules:
+```
+--------
+zero : ℕ
+
+m : ℕ
+--------
+suc m : ℕ
+```
+And here is the definition in Lean:
+
+```lean
+inductive ℕ : Type where
+| zero : ℕ
+| suc  : ℕ -> ℕ
+```
+Here `ℕ` is the name of the datatype we are defining, and `zero` and `suc`
+(short for successor) are the *constructors* of the datatype.
+
+Both definitions above tell us two things:
+
+1. base case: `zero` is a natural number
+2. inductive case: if `m` is a natural number, then `suc m` is also a natural
+number.
+
+Further, these two rules give the *only* ways of creating natural numbers.
+Hence, the possible natural numbers are:
+```
+.zero
+.suc .zero
+.suc (.suc .zero)
+...
+```
+We write `0` as the shorthand for the `zero` constructor and `1` as shorthand
+for `suc zero`, the successor of zero, that is the number that comes after `0`.
+
+# Exercise: `seven` (practice)
+
+Write out `7` in longhand.
+
+*potential sol:*
 ```lean
 def seven : ℕ :=
   .suc $ .suc $ .suc $ .suc $ .suc $ .suc $ .suc .zero
 ```
+# Unpacking the inference rules
 
 ```lean
-def plus : ℕ → ℕ → ℕ
+def plus : ℕ -> ℕ -> ℕ
 | .zero, n => n
 | .suc m, n => .suc (plus m n)
 ```
