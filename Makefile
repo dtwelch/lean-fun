@@ -1,6 +1,8 @@
 LATEX_BIN ?= /Library/TeX/texbin/lualatex
 OUT_DIR ?= _out/book
 TEX_CACHE_DIR ?= /tmp/lean-fun-texmf-cache
+LEAN_SOURCES := $(shell find PLFA -type f -name '*.lean' | sort)
+BOOK_DEPS := Makefile lakefile.lean lake-manifest.json lean-toolchain $(LEAN_SOURCES)
 
 .PHONY: all build tex book pdf clean
 
@@ -9,13 +11,14 @@ all: build
 build:
 	@lake -q build
 
-tex: build
+$(OUT_DIR)/tex/main.tex: $(BOOK_DEPS)
+	@mkdir -p "$(OUT_DIR)"
 	@lake -q exe plfaBook --output "$(OUT_DIR)" --with-tex --without-html-single --without-html-multi
 
-book: build
-	@rm -rf "$(OUT_DIR)"
+tex: $(OUT_DIR)/tex/main.tex
+
+$(OUT_DIR)/tex/main.pdf: $(OUT_DIR)/tex/main.tex
 	@PATH="$(dir $(LATEX_BIN)):$$PATH" ; \
-	lake -q exe plfaBook --output "$(OUT_DIR)" --with-tex --without-html-single --without-html-multi ; \
 	mkdir -p "$(TEX_CACHE_DIR)" ; \
 	cd "$(OUT_DIR)/tex" && \
 	TEXMFCACHE="$(TEX_CACHE_DIR)" TEXMFVAR="$(TEX_CACHE_DIR)" TEXMFSYSVAR="$(TEX_CACHE_DIR)" \
@@ -27,6 +30,8 @@ book: build
 		printf 'latex failed; see %s/tex/main.log\n' "$(OUT_DIR)" ; \
 		exit 1 ; \
 	}
+
+book: $(OUT_DIR)/tex/main.pdf
 	printf 'pdf: %s/tex/main.pdf\n' "$(OUT_DIR)"
 
 pdf: book
