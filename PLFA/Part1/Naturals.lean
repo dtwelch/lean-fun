@@ -101,7 +101,7 @@ implementation:
 
 ```lean
 def convert : _root_.Nat -> ℕ
-    | _root_.Nat.zero => .zero
+    | _root_.Nat.zero   => .zero
     | _root_.Nat.succ n => .suc (convert n)
 
 instance (n : _root_.Nat) : OfNat ℕ n where
@@ -120,4 +120,14 @@ the definition of addition for the `ℕ` type in lean4:
 def plus : ℕ -> ℕ -> ℕ
     | .zero , n    => n
     | (.suc m) , n => .suc (plus m n)
+
+syntax:65 (priority := high) term:66 " + " term:65 : term
+
+macro_rules
+  | `($a + $b) => `(plus $a $b)
 ```
+
+The `priority` high bit makes it more likely that our overloaded definition of
+`+` for our custom type will get resolved to ours based on the context
+(args, etc.)
+
