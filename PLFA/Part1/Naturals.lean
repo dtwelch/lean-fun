@@ -126,8 +126,10 @@ syntax:65 (priority := high) term:66 " + " term:65 : term
 macro_rules
   | `($a + $b) => `(plus $a $b)
 ```
-
-The `priority` high bit makes it more likely that our overloaded definition of
+The first line of `plus` gives its type: `ℕ -> ℕ -> ℕ`, which indicates that
+the `plus` function accepts two naturals and returns a natural. The infix
+notation allows us to write plus using the usual infix `+` notation. The
+`priority` equals high bit makes it more likely that our overloaded definition of
 `+` for our custom type will get resolved to ours based on the context
 (args, etc.)
 
