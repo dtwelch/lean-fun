@@ -13,8 +13,9 @@ Most are familiar with the natural numbers:
 3
 ...
 ```
-and so on. The set of natural numbers `ℕ` is inifite and we say that `0`, `1`, `2`, `3`,
-and are *values* of type `ℕ` (otherwise indicated with: `0 : ℕ`,  `1 : ℕ`,  etc.).
+and so on. The set of natural numbers `ℕ` is inifite and we say that `0`, `1`,
+`2`, `3`, and are *values* of type `ℕ` (otherwise indicated with: `0 : ℕ`,
+`1 : ℕ`,  etc.).
 
 Although there are infinitely many naturals, yet we can write down its
 definition in just a few lines. Here it is as a pair of inference rules:
@@ -73,11 +74,11 @@ The phrase:
 tells us that `ℕ` is the name of the new data, type and that it is a `Type`,
 which is the way in Lean of saying that it is a type.
 
-The keyword `where` is the name of the new datatype, and that is a `Type`, which
-is the way in Lean of saying that it is a type. The keyword `where` separates the
-declaration of the data from the declaration of its constructors. Each
-constructor is a declared on a separate line, which is indented to indicate that
-it belongs to the corresponding `data` declaration. The lines:
+The keyword `where` is the name of the new datatype, and that is a `Type`,
+which is the way in Lean of saying that it is a type. The keyword `where`
+separates the declaration of the data from the declaration of its constructors.
+Each constructor is a declared on a separate line, which is indented to
+indicate that it belongs to the corresponding `data` declaration. The lines:
 ```
 zero : ℕ
 suc  : ℕ -> ℕ
@@ -87,9 +88,9 @@ They tell us `zero` is a natural number and that `suc` takes a natural number as
 an argument and returns a natural number.
 
 You may have noticed that `ℕ` and `→` don't appear on your keyboard. They are
-symbols in _unicode_. At the end of each chapter is a list of all unicode symbols
-introduced in the chapter, including instruction on how to insert them into the
-editor (assuming you're using zed or intellij).
+symbols in _unicode_. At the end of each chapter is a list of all unicode
+symbols introduced in the chapter, including instruction on how to insert them
+into the editor (assuming you're using zed or intellij).
 
 # Lean4 Natural Literal Syntax
 
