@@ -179,4 +179,20 @@ example : 2 + 3 = 5 :=
 end
 ```
 
+# Multiplication
+
+Once we have defined addition, we can define multiplication as repeated
+addition:
+```lean
+def mult : ℕ -> ℕ -> ℕ
+| .zero, n      => .zero
+| (.suc m), n   => plus n (mult m n)
+```
+Computing `m * n` returns the sum of `m` copies of `n`.
+
+Again, rewriting turns the definition into two familiar equations:
+```
+0       * n  =  0
+(1 + m) * n  =  n + (m * n)
+```
 
