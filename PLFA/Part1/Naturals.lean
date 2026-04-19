@@ -30,8 +30,8 @@ And here is the definition in Lean:
 
 ```lean
 inductive ℕ : Type where
-| zero : ℕ
-| suc  : ℕ -> ℕ
+    | zero : ℕ
+    | suc  : ℕ -> ℕ
 ```
 Here `ℕ` is the name of the datatype we are defining, and `zero` and `suc`
 (short for successor) are the *constructors* of the datatype.
@@ -70,7 +70,53 @@ The phrase:
 ```
 ℕ : Type
 ```
-tells us that ℕ is the name of the new data, type and that it is a `Type`, which
-is the way in Lean of saying that it is a type
+tells us that `ℕ` is the name of the new data, type and that it is a `Type`,
+which is the way in Lean of saying that it is a type.
 
-hello.
+The keyword `where` is the name of the new datatype, and that is a `Type`, which
+is the way in Lean of saying that it is a type. The keyword `where` separates the
+declaration of the data from the declaration of its constructors. Each
+constructor is a declared on a separate line, which is indented to indicate that
+it belongs to the corresponding `data` declaration. The lines:
+```
+zero : ℕ
+suc  : ℕ -> ℕ
+```
+give _signatures_ specifying the types of the constructors `zero` and `suc`.
+They tell us `zero` is a natural number and that `suc` takes a natural number as
+an argument and returns a natural number.
+
+You may have noticed that `ℕ` and `→` don't appear on your keyboard. They are
+symbols in _unicode_. At the end of each chapter is a list of all unicode symbols
+introduced in the chapter, including instruction on how to insert them into the
+editor (assuming you're using zed or intellij).
+
+# Lean4 Natural Literal Syntax
+
+Lean4 already defines its own inductive type for the natural numbers and also
+supports integer literal syntax. We can hook into that sytax and relate it to
+our own `ℕ` type with the following conversion function and typeclass instance
+implementation:
+
+```lean
+def convert : _root_.Nat -> ℕ
+    | _root_.Nat.zero => .zero
+    | _root_.Nat.succ n => .suc (convert n)
+
+instance (n : _root_.Nat) : OfNat ℕ n where
+    ofNat := convert n
+```
+
+# Operations on naturals are recursive functions
+
+Now that we have the natural numbers, what can we do with them? For instance,
+can we define arithmetic operations such as addition and multiplication?
+
+It turns out, each of these can be described as _recursive_ functions. Here is
+the definition of addition for the `ℕ` type in lean4:
+
+```lean
+def plus : ℕ -> ℕ -> ℕ
+    | .zero , n    => n
+    | (.suc m) , n => .suc (plus m n)
+```
