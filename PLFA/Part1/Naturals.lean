@@ -219,3 +219,31 @@ example : 3 * 4 = 12 :=
     _ = 4 + 4 + 4                := rfl
     _ = 12                       := rfl
 ```
+
+# Exercise `_^_` (recommended)
+
+Define exponentiation, which is given by the following equations:
+```
+m ^ 0           = 1
+m ^ (1 + n)     = m * (m^n)
+```
+
+*potential sol:*
+
+```lean
+def exponent : ℕ -> ℕ -> ℕ
+    | m , 0         => 1
+    | m , (.suc n)  => m * (exponent m n)
+
+syntax:80 (priority := high) term:81 " ^ " term:80 : term
+
+macro_rules
+  | `($a ^ $b) => `(exponent $a $b)
+```
+
+Check that `3 ^ 4` is `81`:
+
+```lean
+#check (3 ^ 4 = 81)
+```
+
