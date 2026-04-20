@@ -130,14 +130,13 @@ The first line of `plus` gives its type: `ℕ -> ℕ -> ℕ`, which indicates th
 the `plus` function accepts two naturals and returns a natural. The infix
 notation allows us to write plus using the usual infix `+` notation. The
 `priority := high` bit makes it more likely that uses of
-`+` will get resolved to our custom `plus` function (for our own naturals
-number type (`ℕ`) based on the surrounding context.
+`+` will get resolved to our custom `plus` function (for our own natural
+number type (`ℕ`) based on the surrounding context).
 
 If we write zero as `0` and `suc m` as `1 + m`, the definition turns into two familiar equations:
 ```
  0       + n  =  n
- (1 + m) + n  =  1 + (m + n)
-```
+ (1 + m) + n  =  1 + (m + n) ```
 The first follows because zero is an identity for addition, and the second because addition is associative.
 In its most general form, associativity is written
 ```
@@ -185,8 +184,14 @@ Once we have defined addition, we can define multiplication as repeated
 addition:
 ```lean
 def mult : ℕ -> ℕ -> ℕ
-| .zero, n      => .zero
-| (.suc m), n   => plus n (mult m n)
+    | .zero, n      => .zero
+    | (.suc m), n   => n + (mult m n)
+
+-- infix syntax rules for infix syntax:
+syntax:70 (priority := high) term:70 " * " term:71 : term
+
+macro_rules
+  | `($a * $b) => `(mult $a $b)
 ```
 Computing `m * n` returns the sum of `m` copies of `n`.
 
@@ -200,9 +205,15 @@ Again, rewriting turns the definition into two familiar equations:
 
 Compute `3 * 4` writing out your reasoning as a chain of equations using the equations
 for `*`. You do not need to step through the evaluation of `+`
-example 3 * 4 = 12 :=
+
+```lean
+example : 3 * 4 = 12 :=
     calc
-        (suc 2) * 4                 := rfl
-        _ = (suc (suc 1)) * 4       := rfl
-        _ = (suc (suc (suc 0))) * 4 := rfl
-        _ = 4 + (suc (suc (suc 0)) * n)
+        3 * 4
+      = 4 + (2 * 4)              := rfl
+    _ = 4 + (4 + (1 * 4))        := rfl
+    _ = 4 + (4 + (4 + (0 * 4)))  := rfl
+    _ = 4 + (4 + (4 + 0))        := rfl
+    _ = 4 + 4 + 4                := rfl
+    _ = 12                       := rfl
+```
