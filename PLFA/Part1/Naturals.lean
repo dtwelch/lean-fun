@@ -136,7 +136,8 @@ number type (`ℕ`) based on the surrounding context).
 If we write zero as `0` and `suc m` as `1 + m`, the definition turns into two familiar equations:
 ```
  0       + n  =  n
- (1 + m) + n  =  1 + (m + n) ```
+ (1 + m) + n  =  1 + (m + n)
+```
 The first follows because zero is an identity for addition, and the second because addition is associative.
 In its most general form, associativity is written
 ```
@@ -206,6 +207,7 @@ Again, rewriting turns the definition into two familiar equations:
 Compute `3 * 4` writing out your reasoning as a chain of equations using the equations
 for `*`. You do not need to step through the evaluation of `+`
 
+*potential sol:*
 ```lean
 example : 3 * 4 = 12 :=
     calc
