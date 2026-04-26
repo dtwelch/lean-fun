@@ -255,15 +255,19 @@ take the result to be zero. This adaption of subtraction to naturals is called
 monus (a twist on _minus_).
 
 Monus is our first use of a definition that uses pattern matching against both
-arguments.
+arguments:
 ```lean
 def monus : ℕ -> ℕ -> ℕ
     | m, .zero              => m
     | .zero, (.suc n)       => .zero
     | (.suc m), (.suc n)    => monus m n
-```
 
-We can do simple analysis to show that all the cases are covered.
+syntax:80 (priority := high) term:81 " ∸ " term:80 : term
+
+macro_rules
+  | `($a ∸ $b) => `(monus $a $b)
+```
+where lean performs case analysis to ensure that all the cases are covered.
 
 * consider the second argument:
 * * if it is `zero`, then the first equation applies
@@ -276,3 +280,10 @@ and multiplication, the recursive definition is well founded because monus on
 bigger numbers is defined in terms of monus on smaller numbers.
 
 For example, let's subtract two from three:
+```lean
+example : 3 ∸ 2 = 1 :=
+    calc
+        2 ∸ 1
+      = 1 ∸ 0 := rfl
+    _ = 1     := rfl
+```
