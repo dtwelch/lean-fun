@@ -220,7 +220,7 @@ example : 3 * 4 = 12 :=
     _ = 12                       := rfl
 ```
 
-# Exercise `_^_` (recommended)
+# Exercise exponentiation (recommended)
 
 Define exponentiation, which is given by the following equations:
 ```
@@ -266,9 +266,13 @@ def monus : ℕ -> ℕ -> ℕ
 We can do simple analysis to show that all the cases are covered.
 
 * consider the second argument:
--- if it is `zero`, then the first equation applies
--- if it is `suc n` then consider the first argument
--- -- if it is `zero` then the second equation applies
--- -- if it is `suc m` then the third equation applies.
+* * if it is `zero`, then the first equation applies
+* * if it is `suc n`, then consider the first argument
+* * a) if it is `zero`, then the second equation applies
+* * b) if it is `suc m`, then the third equation applies
 
-Agda
+Lean will raise an error if all the cases are not covered. As with addition
+and multiplication, the recursive definition is well founded because monus on
+bigger numbers is defined in terms of monus on smaller numbers.
+
+For example, let's subtract two from three:
