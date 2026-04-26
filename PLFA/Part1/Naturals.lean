@@ -1,4 +1,5 @@
 import VersoManual
+import PLFA.VersoExtensions
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
@@ -13,9 +14,11 @@ Most are familiar with the natural numbers:
 3
 ...
 ```
+:::noindent
 and so on. The set of natural numbers `ℕ` is inifite and we say that `0`, `1`,
 `2`, `3`, and are *values* of type `ℕ` (otherwise indicated with: `0 : ℕ`,
 `1 : ℕ`,  etc.).
+:::
 
 Although there are infinitely many naturals, yet we can write down its
 definition in just a few lines. Here it is as a pair of inference rules:
@@ -138,13 +141,14 @@ If we write zero as `0` and `suc m` as `1 + m`, the definition turns into two fa
  0       + n  =  n
  (1 + m) + n  =  1 + (m + n)
 ```
+:::noindent
 The first follows because zero is an identity for addition, and the second because addition is associative.
 In its most general form, associativity is written
 ```
 (m + n) + p = m + (n + p)
 ```
 meaning the location of the parentheses is irrelevant.
-
+:::
 An example of how we can use these constructors (better more illustrative
 example second I think):
 
@@ -194,9 +198,11 @@ syntax:70 (priority := high) term:70 " * " term:71 : term
 macro_rules
   | `($a * $b) => `(mult $a $b)
 ```
-Computing `m * n` returns the sum of `m` copies of `n`.
 
-Again, rewriting turns the definition into two familiar equations:
+:::noindent
+Computing `m * n` returns the sum of `m` copies of `n`. Again, rewriting turns the definition into two familiar equations:
+:::
+
 ```
 0       * n  =  0
 (1 + m) * n  =  n + (m * n)
@@ -267,8 +273,9 @@ syntax:80 (priority := high) term:81 " ∸ " term:80 : term
 macro_rules
   | `($a ∸ $b) => `(monus $a $b)
 ```
+:::noindent
 where lean performs case analysis to ensure that all the cases are covered.
-
+:::
 * consider the second argument:
 * * if it is `zero`, then the first equation applies
 * * if it is `suc n`, then consider the first argument
