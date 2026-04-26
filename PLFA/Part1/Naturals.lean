@@ -204,8 +204,8 @@ Again, rewriting turns the definition into two familiar equations:
 
 # Exercise `*-example` (practice)
 
-Compute `3 * 4` writing out your reasoning as a chain of equations using the equations
-for `*`. You do not need to step through the evaluation of `+`
+Compute `3 * 4` writing out your reasoning as a chain of equations using the
+equations for `*`. You do not need to step through the evaluation of `+`
 
 *potential sol:*
 ```lean
@@ -247,3 +247,28 @@ Check that `3 ^ 4` is `81`:
 #check (3 ^ 4 = 81)
 ```
 
+# Monus
+
+We can also define subtraction for natural numbers. Since there are no negative
+natural numbers, if we subtract a larger number from a smaller number we will
+take the result to be zero. This adaption of subtraction to naturals is called
+monus (a twist on _minus_).
+
+Monus is our first use of a definition that uses pattern matching against both
+arguments.
+```lean
+def monus : ℕ -> ℕ -> ℕ
+    | m, .zero              => m
+    | .zero, (.suc n)       => .zero
+    | (.suc m), (.suc n)    => monus m n
+```
+
+We can do simple analysis to show that all the cases are covered.
+
+* consider the second argument:
+-- if it is `zero`, then the first equation applies
+-- if it is `suc n` then consider the first argument
+-- -- if it is `zero` then the second equation applies
+-- -- if it is `suc m` then the third equation applies.
+
+Agda
