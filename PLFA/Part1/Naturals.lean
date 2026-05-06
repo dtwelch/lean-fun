@@ -302,6 +302,25 @@ subtract a larger number from a smaller one:
 example : 2 ∸ 3 = 0 :=
     calc
         1 ∸ 2
-      = 0 ∸ (.suc 0) := rfl
+    _ = 0 ∸ 1        := rfl -- desugars to:
+    _ = 0 ∸ (.suc 0) := rfl
     _ = 0            := rfl
 ```
+
+# Currying
+
+We have chosen to represent a function of two arguments in terms of a function
+of the first argument that returns a function of the second argument. This trick
+goes by the name _currying_.
+
+Lean4, like other functional languages such as Haskell and ML, is designed to
+make currying easy to use. Function arrows associate to the right and application
+associates to the left:
+
+`ℕ -> ℕ -> ℕ` associates like so: `ℕ -> (ℕ -> ℕ)`
+:::noindent
+and
+:::
+
+`plus 2 3` stands for `(plus 2) 3`
+
