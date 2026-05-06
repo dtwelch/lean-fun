@@ -1,6 +1,12 @@
 /.lake/
-/_out/
 /.verso/
 /.idea/
 *.swp
 .DS_Store
+
+# ignore generated TeX output by default
+/_out/book/tex/*
+
+# keep PDFs and TeX files in _out/ 
+!/_out/book/tex/*.pdf
+!/_out/book/tex/*.tex

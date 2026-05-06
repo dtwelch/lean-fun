@@ -1,0 +1,588 @@
+
+\documentclass{memoir}
+
+\usepackage{sourcecodepro}
+\usepackage{sourcesanspro}
+\usepackage{sourceserifpro}
+
+\usepackage{fancyvrb}
+\usepackage{fvextra}
+\usepackage{xparse}
+
+\usepackage[most]{tcolorbox}
+
+% Detect whether we're in a footnote. This is used later to avoid \href rendering bugs.
+\newif\ifinfootnote
+\infootnotefalse
+
+\let\oldfootnote\footnote
+\renewcommand{\footnote}[1]{%
+  \oldfootnote{\infootnotetrue#1\infootnotefalse}%
+}
+
+\let\oldfootnotetext\footnotetext
+\renewcommand{\footnotetext}[1]{%
+  \oldfootnotetext{\infootnotetrue#1\infootnotefalse}%
+}
+
+\usepackage[breaklinks=true, hyperfootnotes=false]{hyperref}
+
+% Redefines \href to show footnotes with URLs instead. This works around a page breaking bug in
+% hyperref and also makes the link useful on paper. If already in a footnote, the URL is
+% in parentheses instead.
+\let\oldhref\href
+\RenewDocumentCommand{\href}{mm}{%
+  \ifinfootnote%
+    #2~(\url{#1})%
+  \else%
+    #2\footnote{\url{#1}}%
+  \fi%
+}
+
+\usepackage[normalem]{ulem}
+\newcommand{\coloredwave}[2]{\textcolor{#1}{\uwave{\textcolor{black}{#2}}}}
+\usepackage{newunicodechar}
+
+% Work around the fact that
+% U+271D LATIN CROSS doesn't exist in
+% DejaVu Sans Mono Oblique. \textup
+% is fontspec for "upright, not italic/oblique".
+\newunicodechar{✝}{\textup{✝}}
+% Work around missing U+2011 (non-breaking hyphen) in Source Serif Pro
+\newunicodechar{‑}{-}
+
+\definecolor{errorColor}{HTML}{B91C1C}
+\definecolor{infoColor}{HTML}{1E6BB8}
+\definecolor{warningColor}{HTML}{D97706}
+\newcommand{\errorDecorate}[1]{\coloredwave{errorColor}{#1}}
+\newcommand{\infoDecorate}[1]{\coloredwave{infoColor}{#1}}
+\newcommand{\warningDecorate}[1]{\coloredwave{warningColor}{#1}}
+\DefineVerbatimEnvironment{LeanVerbatim}{Verbatim}
+  {commandchars=\\\{\},fontsize=\small,breaklines=true}
+\DefineVerbatimEnvironment{FileVerbatim}{Verbatim}{commandchars=\\\{\},fontsize=\small,breaklines=true,frame=single,framesep=2mm,numbers=left}
+\CustomVerbatimCommand{\LeanVerb}{Verb}
+  {commandchars=\\\{\},fontsize=\small,breaklines=true}
+\CustomVerbatimCommand{\FileListingVerb}{Verb}
+  {commandchars=\\\{\},fontsize=\small,frame=single,framesep=2mm, numbers=left}
+
+%%% Trace messages
+\newlength{\traceindent}
+\setlength{\traceindent}{1.5em}
+
+\newcommand{\expandedIndicator}{$\blacktriangledown$\hspace{2pt}}
+\newcommand{\collapsedIndicator}{$\blacktriangleright$\hspace{2pt}}
+
+\newenvironment{expandedtrace}[1]{%
+  \par\noindent\expandedIndicator #1\par
+  \advance\leftskip by \traceindent
+}{%
+}
+
+\newenvironment{collapsedtrace}[1]{%
+  \par\noindent\collapsedIndicator #1\par
+  \advance\leftskip by \traceindent
+}{%
+}
+%%% End Trace messages
+
+\definecolor{bordercolor}{HTML}{98B2C0}
+\definecolor{medgray}{HTML}{555555}
+\newtcolorbox{docstringBox}[2][]{colback=white,
+breakable,
+colframe=bordercolor,
+colbacktitle=white,
+enhanced,
+coltitle=medgray,
+attach boxed title to top left={xshift=2mm,yshift=-2mm},
+boxrule=0.4pt,
+fonttitle=\sffamily\fontsize{6pt}{7pt}\selectfont,
+boxed title style={top=-0.3mm,bottom=-0.3mm,left=-0.3mm,right=-0.3mm,boxrule=0.4pt},
+title={#2},#1}
+
+
+\makechapterstyle{lean}{%
+\renewcommand*{\chaptitlefont}{\sffamily\HUGE}
+\renewcommand*{\chapnumfont}{\chaptitlefont}
+% allow for 99 chapters!
+\settowidth{\chapindent}{\chapnumfont 999}
+\renewcommand*{\printchaptername}{}
+\renewcommand*{\chapternamenum}{}
+\renewcommand*{\chapnumfont}{\chaptitlefont}
+\renewcommand*{\printchapternum}{%
+\noindent\llap{\makebox[\chapindent][l]{%
+\chapnumfont \thechapter}}}
+\renewcommand*{\afterchapternum}{}
+}
+
+\chapterstyle{lean}
+
+\setsecheadstyle{\sffamily\bfseries\Large}
+\setsubsecheadstyle{\sffamily\bfseries\large}
+\setsubsubsecheadstyle{\sffamily\bfseries}
+
+\renewcommand{\cftchapterfont}{\normalfont\sffamily}
+\renewcommand{\cftsectionfont}{\normalfont\sffamily}
+\renewcommand{\cftchapterpagefont}{\normalfont\sffamily}
+\renewcommand{\cftsectionpagefont}{\normalfont\sffamily}
+\setmonofont{DejaVu Sans Mono}
+
+\definecolor{textgray}{HTML}{2C2C2C}
+\AtBeginDocument{\color{textgray}}
+\renewcommand*{\chaptitlefont}{\sffamily\HUGE\color{textgray}}
+\renewcommand*{\chapnumfont}{\chaptitlefont}
+\setsecheadstyle{\sffamily\bfseries\Large\color{textgray}}
+\setsubsecheadstyle{\sffamily\bfseries\large\color{textgray}}
+\setsubsubsecheadstyle{\sffamily\bfseries\color{textgray}}
+\makeevenhead{headings}{\color{textgray}\thepage}{}{\slshape\color{textgray}\leftmark}
+\makeoddhead{headings}{\slshape\color{textgray}\rightmark}{}{\color{textgray}\thepage}
+
+\title{\sffamily PLFA in Lean}
+\author{\sffamily Daniel}
+\date{\sffamily }
+
+\begin{document}
+
+\frontmatter
+
+\begin{titlingpage}
+\maketitle
+\end{titlingpage}
+
+\tableofcontents
+
+
+
+\mainmatter
+\chapter{Part 1}\label{PLFA--in--Lean----Part--1}
+
+
+
+\section{Naturals}\label{PLFA--in--Lean----Part--1----Naturals}
+
+Most are familiar with the natural numbers:
+
+\begin{verbatim}
+0
+1
+2
+3
+...
+
+\end{verbatim}
+
+
+\par\noindent and so on. The set of natural numbers \LeanVerb|ℕ| is inifite and we say that \LeanVerb|0|, \LeanVerb|1|,
+\LeanVerb|2|, \LeanVerb|3|, and are \textbf{values} of type \LeanVerb|ℕ| (otherwise indicated with: \LeanVerb|0 : ℕ|,
+\LeanVerb|1 : ℕ|,  etc.).
+
+
+Although there are infinitely many naturals, yet we can write down its
+definition in just a few lines. Here it is as a pair of inference rules:
+
+\begin{verbatim}
+--------
+zero : ℕ
+
+m : ℕ
+--------
+suc m : ℕ
+
+\end{verbatim}
+
+
+And here is the definition in Lean:
+
+\begin{LeanVerbatim}
+\textbf{inductive} ℕ : Type \textbf{where}
+    \symbol{124} zero : ℕ
+    \symbol{124} suc  : ℕ -> ℕ
+
+\end{LeanVerbatim}
+
+
+Here \LeanVerb|ℕ| is the name of the datatype we are defining, and \LeanVerb|zero| and \LeanVerb|suc|
+(short for successor) are the \textbf{constructors} of the datatype.
+
+Both definitions above tell us two things:
+
+\begin{enumerate}
+\item base case: \LeanVerb|zero| is a natural number
+\item inductive case: if \LeanVerb|m| is a natural number, then \LeanVerb|suc m| is also a natural
+number.
+
+\end{enumerate}
+
+
+Further, these two rules give the \textbf{only} ways of creating natural numbers.
+Hence, the possible natural numbers are:
+
+\begin{verbatim}
+.zero
+.suc .zero
+.suc (.suc .zero)
+...
+
+\end{verbatim}
+
+
+We write \LeanVerb|0| as the shorthand for the \LeanVerb|zero| constructor and \LeanVerb|1| as shorthand
+for \LeanVerb|suc zero|, the successor of zero, that is the number that comes after \LeanVerb|0|.
+
+
+
+\subsection{Exercise: \texttt{seven} (practice)}\label{PLFA--in--Lean----Part--1----Naturals----Exercise-005F-005F-005F----seven-----005FLPAR-005Fpractice-005FRPAR-005F}
+
+Write out \LeanVerb|7| in longhand.
+
+\textbf{potential sol:}
+
+\begin{LeanVerbatim}
+\textbf{def} seven : ℕ :=
+  .suc $ .suc $ .suc $ .suc $ .suc $ .suc $ .suc .zero
+
+\end{LeanVerbatim}
+
+
+
+
+\subsection{Unpacking the inference rules}\label{PLFA--in--Lean----Part--1----Naturals----Unpacking--the--inference--rules}
+
+Let's unpack the Lean definition. the keyword \LeanVerb|inductive| tells us this is an
+inductive definition, that is, we are defining a new datatype with constructors.
+The phrase:
+
+\begin{verbatim}
+ℕ : Type
+
+\end{verbatim}
+
+
+tells us that \LeanVerb|ℕ| is the name of the new data, type and that it is a \LeanVerb|Type|,
+which is the way in Lean of saying that it is a type.
+
+The keyword \LeanVerb|where| is the name of the new datatype, and that is a \LeanVerb|Type|,
+which is the way in Lean of saying that it is a type. The keyword \LeanVerb|where|
+separates the declaration of the data from the declaration of its constructors.
+Each constructor is a declared on a separate line, which is indented to
+indicate that it belongs to the corresponding \LeanVerb|data| declaration. The lines:
+
+\begin{verbatim}
+zero : ℕ
+suc  : ℕ -> ℕ
+
+\end{verbatim}
+
+
+give \emph{signatures} specifying the types of the constructors \LeanVerb|zero| and \LeanVerb|suc|.
+They tell us \LeanVerb|zero| is a natural number and that \LeanVerb|suc| takes a natural number as
+an argument and returns a natural number.
+
+You may have noticed that \LeanVerb|ℕ| and \LeanVerb|→| don't appear on your keyboard. They are
+symbols in \emph{unicode}. At the end of each chapter is a list of all unicode
+symbols introduced in the chapter, including instruction on how to insert them
+into the editor (assuming you're using zed or intellij).
+
+
+
+\subsection{Lean4 Natural Literal Syntax}\label{PLFA--in--Lean----Part--1----Naturals----Lean4--Natural--Literal--Syntax}
+
+Lean4 already defines its own inductive type for the natural numbers and also
+supports integer literal syntax. We can hook into that sytax and relate it to
+our own \LeanVerb|ℕ| type with the following conversion function and typeclass instance
+implementation:
+
+\begin{LeanVerbatim}
+\textbf{def} convert : _root_.Nat -> ℕ
+    \symbol{124} _root_.Nat.zero   => .zero
+    \symbol{124} _root_.Nat.succ \textit{n} => .suc (convert \textit{n})
+
+\textbf{instance} (\textit{n} : _root_.Nat) : OfNat ℕ \textit{n} \textbf{where}
+    ofNat := convert \textit{n}
+
+\end{LeanVerbatim}
+
+
+
+
+\subsection{Operations on naturals are recursive functions}\label{PLFA--in--Lean----Part--1----Naturals----Operations--on--naturals--are--recursive--functions}
+
+Now that we have the natural numbers, what can we do with them? For instance,
+can we define arithmetic operations such as addition and multiplication?
+
+It turns out, each of these can be described as \emph{recursive} functions. Here is
+the definition of addition for the \LeanVerb|ℕ| type in lean4:
+
+\begin{LeanVerbatim}
+\textbf{def} plus : ℕ -> ℕ -> ℕ
+    \symbol{124} .zero , \textit{n}    => \textit{n}
+    \symbol{124} (.suc \textit{m}) , \textit{n} => .suc (plus \textit{m} \textit{n})
+
+\textbf{syntax}:65 (\textbf{priority} := \textbf{high}) term:66 " + " term:65 : term
+
+\textbf{macro_rules}
+  \symbol{124} `($\textit{a} + $\textit{b}) => `(plus $\textit{a} $\textit{b})
+
+\end{LeanVerbatim}
+
+
+The first line of \LeanVerb|plus| gives its type: \LeanVerb|ℕ -> ℕ -> ℕ|, which indicates that
+the \LeanVerb|plus| function accepts two naturals and returns a natural. The infix
+notation allows us to write plus using the usual infix \LeanVerb|+| notation. The
+\LeanVerb|priority := high| bit makes it more likely that uses of
+\LeanVerb|+| will get resolved to our custom \LeanVerb|plus| function (for our own natural
+number type (\LeanVerb|ℕ|) based on the surrounding context).
+
+If we write zero as \LeanVerb|0| and \LeanVerb|suc m| as \LeanVerb|1 + m|, the definition turns into two familiar equations:
+
+\begin{verbatim}
+ 0       + n  =  n
+ (1 + m) + n  =  1 + (m + n)
+
+\end{verbatim}
+
+
+\par\noindent The first follows because zero is an identity for addition, and the second because addition is associative.
+In its most general form, associativity is written\begin{verbatim}
+(m + n) + p = m + (n + p)
+
+\end{verbatim}
+meaning the location of the parentheses is irrelevant.
+
+
+An example of how we can use these constructors (better more illustrative
+example second I think):
+
+\begin{LeanVerbatim}
+\textbf{example} : 3 + 2 = 5 :=
+  \textbf{calc}
+      3 + 2
+      = .suc (2 + 2)                 := rfl
+      _ = .suc (.suc (1 + 2))        := rfl
+      _ = .suc (.suc (.suc (0 + 2))) := rfl
+      _ = .suc (.suc (.suc 2))       := rfl
+      _ = 5                          := rfl
+
+\end{LeanVerbatim}
+
+
+Note we could've expressed the theorem like so if we wanted to
+make it more clear in the local context that these literals are formed via our
+\LeanVerb|ℕ| type like so: \LeanVerb|example : 3 + 2 = (5 : ℕ)|
+
+Here's another version closer to the original PLFA text:
+
+\begin{LeanVerbatim}
+\textbf{section}
+\textbf{open} ℕ  -- so we don't need dots in front of each ctor
+\textbf{example} : 2 + 3 = 5 :=
+  \textbf{calc}
+      2 + 3
+      = (suc (suc zero)) + (suc (suc (suc zero)))   := rfl
+      _ = suc ((suc zero) + (suc (suc (suc zero)))) := rfl
+      _ = suc (suc (zero + (suc (suc (suc zero))))) := rfl
+      _ = suc (suc (suc (suc (suc zero))))          := rfl
+      _ = 5                                         := rfl
+\textbf{end}
+
+\end{LeanVerbatim}
+
+
+
+
+\subsection{Multiplication}\label{PLFA--in--Lean----Part--1----Naturals----Multiplication}
+
+Once we have defined addition, we can define multiplication as repeated
+addition:
+
+\begin{LeanVerbatim}
+\textbf{def} mult : ℕ -> ℕ -> ℕ
+    \symbol{124} .zero, \warningDecorate{\textit{n}}      => .zero
+    \symbol{124} (.suc \textit{m}), \textit{n}   => \textit{n} + (mult \textit{m} \textit{n})
+
+-- infix syntax rules for infix syntax:
+\textbf{syntax}:70 (\textbf{priority} := \textbf{high}) term:70 " * " term:71 : term
+
+\textbf{macro_rules}
+  \symbol{124} `($\textit{a} * $\textit{b}) => `(mult $\textit{a} $\textit{b})
+
+\end{LeanVerbatim}
+
+
+\par\noindent Computing \LeanVerb|m * n| returns the sum of \LeanVerb|m| copies of \LeanVerb|n|. Again, rewriting turns
+the definition into two familiar equations:
+
+
+\begin{verbatim}
+0       * n  =  0
+(1 + m) * n  =  n + (m * n)
+
+\end{verbatim}
+
+
+
+
+\subsection{Exercise \texttt{*-example} (practice)}\label{PLFA--in--Lean----Part--1----Naturals----Exercise-----005F-005F-005F--example-----005FLPAR-005Fpractice-005FRPAR-005F}
+
+Compute \LeanVerb|3 * 4| writing out your reasoning as a chain of equations using the
+equations for \LeanVerb|*|. You do not need to step through the evaluation of \LeanVerb|+|
+
+\textbf{potential sol:}
+
+\begin{LeanVerbatim}
+\textbf{example} : 3 * 4 = 12 :=
+    \textbf{calc}
+        3 * 4
+      = 4 + (2 * 4)              := rfl
+    _ = 4 + (4 + (1 * 4))        := rfl
+    _ = 4 + (4 + (4 + (0 * 4)))  := rfl
+    _ = 4 + (4 + (4 + 0))        := rfl
+    _ = 4 + 4 + 4                := rfl
+    _ = 12                       := rfl
+
+\end{LeanVerbatim}
+
+
+
+
+\subsection{Exercise exponentiation (recommended)}\label{PLFA--in--Lean----Part--1----Naturals----Exercise--exponentiation---005FLPAR-005Frecommended-005FRPAR-005F}
+
+Define exponentiation, which is given by the following equations:
+
+\begin{verbatim}
+m ^ 0           = 1
+m ^ (1 + n)     = m * (m^n)
+
+\end{verbatim}
+
+
+\textbf{potential sol:}
+
+\begin{LeanVerbatim}
+\textbf{def} exponent : ℕ -> ℕ -> ℕ
+    \symbol{124} \warningDecorate{\textit{m}} , 0         => 1
+    \symbol{124} \textit{m} , (.suc \textit{n})  => \textit{m} * (exponent \textit{m} \textit{n})
+
+\textbf{syntax}:80 (\textbf{priority} := \textbf{high}) term:81 " ^ " term:80 : term
+
+\textbf{macro_rules}
+  \symbol{124} `($\textit{a} ^ $\textit{b}) => `(exponent $\textit{a} $\textit{b})
+
+\end{LeanVerbatim}
+
+
+Check that \LeanVerb|3 ^ 4| is \LeanVerb|81|:
+
+\begin{LeanVerbatim}
+\infoDecorate{\textbf{\symbol{35}check}} (3 ^ 4 = 81)
+
+\end{LeanVerbatim}
+
+
+
+
+\subsection{Monus}\label{PLFA--in--Lean----Part--1----Naturals----Monus}
+
+We can also define subtraction for natural numbers. Since there are no negative
+natural numbers, if we subtract a larger number from a smaller number we will
+take the result to be zero. This adaption of subtraction to naturals is called
+monus (a twist on \emph{minus}).
+
+Monus is our first use of a definition that uses pattern matching against both
+arguments:
+
+\begin{LeanVerbatim}
+\textbf{def} monus : ℕ -> ℕ -> ℕ
+    \symbol{124} \textit{m}, .zero              => \textit{m}
+    \symbol{124} .zero, (.suc \warningDecorate{\textit{n}})       => .zero
+    \symbol{124} (.suc \textit{m}), (.suc \textit{n})    => monus \textit{m} \textit{n}
+
+\textbf{syntax}:80 (\textbf{priority} := \textbf{high}) term:81 " ∸ " term:80 : term
+
+\textbf{macro_rules}
+  \symbol{124} `($\textit{a} ∸ $\textit{b}) => `(monus $\textit{a} $\textit{b})
+
+\end{LeanVerbatim}
+
+
+\par\noindent where lean performs case analysis to ensure that all the cases are covered.
+
+
+\begin{itemize}
+\item consider the second argument:
+\item \begin{itemize}
+\item if it is \LeanVerb|zero|, then the first equation applies
+
+\end{itemize}
+
+\item \begin{itemize}
+\item if it is \LeanVerb|suc n|, then consider the first argument
+
+\end{itemize}
+
+\item \begin{itemize}
+\item a) if it is \LeanVerb|zero|, then the second equation applies
+
+\end{itemize}
+
+\item \begin{itemize}
+\item b) if it is \LeanVerb|suc m|, then the third equation applies
+
+\end{itemize}
+
+
+\end{itemize}
+
+
+Lean will raise an error if all the cases are not covered. As with addition
+and multiplication, the recursive definition is well founded because monus on
+bigger numbers is defined in terms of monus on smaller numbers.
+
+For example, let's subtract two from three:
+
+\begin{LeanVerbatim}
+\textbf{example} : 3 ∸ 2 = 1 :=
+    \textbf{calc}
+        2 ∸ 1
+      = 1 ∸ 0 := rfl
+    _ = 1     := rfl
+
+\end{LeanVerbatim}
+
+
+We did not use the second equation at all, but it will be required if we try to
+subtract a larger number from a smaller one:
+
+\begin{LeanVerbatim}
+\textbf{example} : 2 ∸ 3 = 0 :=
+    \textbf{calc}
+        1 ∸ 2
+    _ = 0 ∸ 1        := rfl -- desugars to:
+    _ = 0 ∸ (.suc 0) := rfl
+    _ = 0            := rfl
+
+\end{LeanVerbatim}
+
+
+
+
+\subsection{Currying}\label{PLFA--in--Lean----Part--1----Naturals----Currying}
+
+We have chosen to represent a function of two arguments in terms of a function
+of the first argument that returns a function of the second argument. This trick
+goes by the name \emph{currying}.
+
+Lean4, like other functional languages such as Haskell and ML, is designed to
+make currying easy to use. Function arrows associate to the right and application
+associates to the left:
+
+\LeanVerb|ℕ -> ℕ -> ℕ| associates like so: \LeanVerb|ℕ -> (ℕ -> ℕ)|
+
+\par\noindent and
+
+
+\LeanVerb|plus 2 3| stands for \LeanVerb|(plus 2) 3|
+
+
+
+
+\end{document}
