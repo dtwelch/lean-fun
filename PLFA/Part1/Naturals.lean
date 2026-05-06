@@ -295,3 +295,13 @@ example : 3 ∸ 2 = 1 :=
       = 1 ∸ 0 := rfl
     _ = 1     := rfl
 ```
+
+We did not use the second equation at all, but it will be required if we try to
+subtract a larger number from a smaller one:
+```lean
+example : 2 ∸ 3 = 0 :=
+    calc
+        1 ∸ 2
+      = 0 ∸ (.suc 0) := rfl
+    _ = 0            := rfl
+```
