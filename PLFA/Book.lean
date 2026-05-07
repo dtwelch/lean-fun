@@ -28,4 +28,7 @@ authors := ["Daniel"]
 
 # Part 1
 
+This part collects the early material on natural numbers and induction.
+
 {include 2 PLFA.Part1.Naturals}
+{include 2 PLFA.Part1.Induction}

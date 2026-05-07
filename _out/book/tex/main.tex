@@ -155,6 +155,8 @@ title={#2},#1}
 \mainmatter
 \chapter{Part 1}\label{PLFA--in--Lean----Part--1}
 
+This part collects the early material on natural numbers and induction.
+
 
 
 \section{Naturals}\label{PLFA--in--Lean----Part--1----Naturals}
@@ -581,6 +583,236 @@ associates to the left:
 
 
 \LeanVerb|plus 2 3| stands for \LeanVerb|(plus 2) 3|
+
+\par\noindent The term \LeanVerb|plus 2| by itself stands for the function that adds two to its
+argument, hence applying it to three yields five.
+
+
+Currying is named for Haskell B. Curry (a Penn State professor actually:
+https://www.hmdb.org/m.asp?m=134735;
+\href{https://mathshistory.st-andrews.ac.uk/Biographies/Curry/}{bio})
+
+
+
+\subsection{Story of creation, revisited}\label{PLFA--in--Lean----Part--1----Naturals----Story--of--creation-005F-005F-005F--revisited}
+
+Just as our inductive definition defines the naturals in terms of the naturals,
+so does our recursive definition define addition in terms of addition.
+
+Again we resort to a creation story, where this time we are concerned with
+judgments about addition:
+
+\begin{verbatim}
+-- In the beginning, we know nothing about addition.
+
+\end{verbatim}
+
+
+Now, we apply the rules to all the judgment we know about. The base case tells
+us that \LeanVerb|.zero + n = n| for every natural \LeanVerb|n|, so we add all those equations.
+The inductive case tells us that if \LeanVerb|m + n = p| (on the day before today) then
+\LeanVerb|suc m + n = suc p| (today). We didn't know any equations about addition before
+today, so that rule doesn't give us any new equations:
+
+\begin{verbatim}
+-- On the first day, we know about addition of 0.
+0 + 0 = 0     0 + 1 = 1    0 + 2 = 2     ...
+
+\end{verbatim}
+
+
+Then we repeat the process, so on the next day we know about all the equations
+from the day before, plus any equations added by the rules. The base case tells
+us nothing new, but now the inductive case adds more equations:
+
+\begin{verbatim}
+-- On the second day, we know about addition of 0 and 1.
+0 + 0 = 0     0 + 1 = 1     0 + 2 = 2     0 + 3 = 3     ...
+1 + 0 = 1     1 + 1 = 2     1 + 2 = 3     1 + 3 = 4     ...
+
+\end{verbatim}
+
+
+And we repeat the process again:
+
+\begin{verbatim}
+-- On the third day, we know about addition of 0, 1, and 2.
+0 + 0 = 0     0 + 1 = 1     0 + 2 = 2     0 + 3 = 3     ...
+1 + 0 = 1     1 + 1 = 2     1 + 2 = 3     1 + 3 = 4     ...
+2 + 0 = 2     2 + 1 = 3     2 + 2 = 4     2 + 3 = 5     ...
+
+\end{verbatim}
+
+
+You've got the hang of it by now:
+
+\begin{verbatim}
+-- On the fourth day, we know about addition of 0, 1, 2, and 3.
+0 + 0 = 0     0 + 1 = 1     0 + 2 = 2     0 + 3 = 3     ...
+1 + 0 = 1     1 + 1 = 2     1 + 2 = 3     1 + 3 = 4     ...
+2 + 0 = 2     2 + 1 = 3     2 + 2 = 4     2 + 3 = 5     ...
+3 + 0 = 3     3 + 1 = 4     3 + 2 = 5     3 + 3 = 6     ...
+
+\end{verbatim}
+
+
+The process continues. On the m'th day we will know all the equations where the
+first number is less than \LeanVerb|m|.
+
+As we can see, the reasoning that justifies inductive and recursive definitions
+is quite similar. They might be considered two sides of the same coin.
+
+
+
+\subsection{The story of creation, finitely}\label{PLFA--in--Lean----Part--1----Naturals----The--story--of--creation-005F-005F-005F--finitely}
+
+The above story was told in a stratified way. First, we create the infinite set
+of naturals. We take that set as given when creating instances of addition, so
+even on day one we have an infinite set of instances.
+
+Instead, we could choose to create both the naturals and the instances of
+addition at the same time. Then on any day there would be only a finite set of
+instances:
+
+\begin{verbatim}
+-- In the beginning, we know nothing.
+
+\end{verbatim}
+
+
+Now, we apply the rules to all the judgment we know about. Only the base case
+for naturals applies:
+
+\begin{verbatim}
+-- On the first day, we know zero.
+0 : ℕ
+
+\end{verbatim}
+
+
+Again, we apply all the rules we know. This gives us a new natural, and our
+first equation about addition.
+
+\begin{verbatim}
+-- On the second day, we know one and all sums that yield zero.
+0 : ℕ
+1 : ℕ    0 + 0 = 0
+
+\end{verbatim}
+
+
+Then we repeat the process. We get one more equation about addition from the
+base case, and also get an equation from the inductive case, applied to
+equation of the previous day:
+
+\begin{verbatim}
+-- On the third day, we know two and all sums that yield one.
+0 : ℕ
+1 : ℕ    0 + 0 = 0
+2 : ℕ    0 + 1 = 1   1 + 0 = 1
+
+\end{verbatim}
+
+
+\par\noindent You've got the hang of it by now:
+
+
+\begin{verbatim}
+-- On the fourth day, we know three and all sums that yield two.
+0 : ℕ
+1 : ℕ    0 + 0 = 0
+2 : ℕ    0 + 1 = 1   1 + 0 = 1
+3 : ℕ    0 + 2 = 2   1 + 1 = 2    2 + 0 = 2
+
+\end{verbatim}
+
+
+On the n'th day there will be n distinct natural numbers, and \LeanVerb|n × (n-1) / 2|
+equations about addition. The number \LeanVerb|n| and all equations for addition of
+numbers less than \LeanVerb|n| first appear by day \LeanVerb|n+1|. This gives an entirely
+finitist view of infinite sets of data and equations relating the data.
+
+
+
+\subsection{Exercise \texttt{Bin} (stretch)}\label{PLFA--in--Lean----Part--1----Naturals----Exercise----Bin-----005FLPAR-005Fstretch-005FRPAR-005F}
+
+A more efficient representation of natural numbers uses a binary rather than a
+unary system. We represent a number as a bitstring:
+
+\begin{LeanVerbatim}
+\textbf{inductive} Bin : Type \textbf{where}
+    \symbol{124} empty  : Bin
+    \symbol{124} t_zero : Bin -> Bin
+    \symbol{124} t_one  : Bin -> Bin
+    \textbf{deriving} Repr
+
+\textbf{syntax}:80 (\textbf{priority} := \textbf{high}) "⟨⟩" : term
+\textbf{syntax}:81 term:80 "O" : term
+\textbf{syntax}:81 term:80 "I" : term
+\textbf{macro_rules}
+  \symbol{124} `(⟨⟩)        => `(Bin.empty)
+  \symbol{124} `($\textit{a}:\textbf{term} \textbf{O}) => `(Bin.t_zero $\textit{a})
+  \symbol{124} `($\textit{a}:\textbf{term} \textbf{I}) => `(Bin.t_one $\textit{a})
+
+\end{LeanVerbatim}
+
+
+\par\noindent So the bitstring:
+
+
+\begin{verbatim}
+1011
+
+\end{verbatim}
+
+
+\par\noindent would stand for the number eleven, encoded in our meta-introduced notation like so:\begin{LeanVerbatim}
+\infoDecorate{\textbf{\symbol{35}eval}} ⟨⟩ \textbf{I} \textbf{O} \textbf{I} \textbf{I}
+
+\end{LeanVerbatim}
+written desugared:\begin{verbatim}
+Bin.t_one (Bin.t_one (Bin.t_zero (Bin.t_one (Bin.empty))))
+
+\end{verbatim}
+Representations are not unique due to leading zeroes. Hence eleven can also be
+represented by \LeanVerb|0001011|, encoded as:\begin{LeanVerbatim}
+\infoDecorate{\textbf{\symbol{35}eval}} ⟨⟩ \textbf{O} \textbf{O} \textbf{I} \textbf{O} \textbf{I} \textbf{I}
+
+\end{LeanVerbatim}
+Define a function:\begin{verbatim}
+def inc : Bin -> Bin
+
+\end{verbatim}
+that converts a bitstring to the bitstring for the next higher number.
+
+
+\clearpage
+
+
+
+
+\section{Induction: Proof by Induction}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction}
+
+\par\noindent Now that we've defined the naturals and operations on them, our next step is to
+learn how to prove properties that they satisfy. As hinted by their name,
+properties of \emph{inductive datatypes} are proved by \emph{induction}.
+
+
+
+
+\subsection{Properties of operators}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----Properties--of--operators}
+
+\par\noindent Operations popup all the time, and mathematicians have agreed on names for some
+of the most common properties:
+
+
+\begin{itemize}
+\item \emph{Identity}. Operator \LeanVerb|+| has left identity \LeanVerb|0| if \LeanVerb|0 + n = n|, and right
+identity if \LeanVerb|n + 0 = n|, for all \LeanVerb|n|.
+
+
+\end{itemize}
+
 
 
 

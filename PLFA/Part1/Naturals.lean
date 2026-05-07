@@ -324,3 +324,157 @@ and
 
 `plus 2 3` stands for `(plus 2) 3`
 
+:::noindent
+The term `plus 2` by itself stands for the function that adds two to its
+argument, hence applying it to three yields five.
+:::
+
+Currying is named for Haskell B. Curry (a Penn State professor actually:
+https://www.hmdb.org/m.asp?m=134735;
+[bio](https://mathshistory.st-andrews.ac.uk/Biographies/Curry/))
+
+# Story of creation, revisited
+
+Just as our inductive definition defines the naturals in terms of the naturals,
+so does our recursive definition define addition in terms of addition.
+
+Again we resort to a creation story, where this time we are concerned with
+judgments about addition:
+```
+-- In the beginning, we know nothing about addition.
+```
+Now, we apply the rules to all the judgment we know about. The base case tells
+us that `.zero + n = n` for every natural `n`, so we add all those equations.
+The inductive case tells us that if `m + n = p` (on the day before today) then
+`suc m + n = suc p` (today). We didn't know any equations about addition before
+today, so that rule doesn't give us any new equations:
+```
+-- On the first day, we know about addition of 0.
+0 + 0 = 0     0 + 1 = 1    0 + 2 = 2     ...
+```
+Then we repeat the process, so on the next day we know about all the equations
+from the day before, plus any equations added by the rules. The base case tells
+us nothing new, but now the inductive case adds more equations:
+
+```
+-- On the second day, we know about addition of 0 and 1.
+0 + 0 = 0     0 + 1 = 1     0 + 2 = 2     0 + 3 = 3     ...
+1 + 0 = 1     1 + 1 = 2     1 + 2 = 3     1 + 3 = 4     ...
+```
+And we repeat the process again:
+```
+-- On the third day, we know about addition of 0, 1, and 2.
+0 + 0 = 0     0 + 1 = 1     0 + 2 = 2     0 + 3 = 3     ...
+1 + 0 = 1     1 + 1 = 2     1 + 2 = 3     1 + 3 = 4     ...
+2 + 0 = 2     2 + 1 = 3     2 + 2 = 4     2 + 3 = 5     ...
+```
+You've got the hang of it by now:
+```
+-- On the fourth day, we know about addition of 0, 1, 2, and 3.
+0 + 0 = 0     0 + 1 = 1     0 + 2 = 2     0 + 3 = 3     ...
+1 + 0 = 1     1 + 1 = 2     1 + 2 = 3     1 + 3 = 4     ...
+2 + 0 = 2     2 + 1 = 3     2 + 2 = 4     2 + 3 = 5     ...
+3 + 0 = 3     3 + 1 = 4     3 + 2 = 5     3 + 3 = 6     ...
+```
+The process continues. On the m'th day we will know all the equations where the
+first number is less than `m`.
+
+As we can see, the reasoning that justifies inductive and recursive definitions
+is quite similar. They might be considered two sides of the same coin.
+
+# The story of creation, finitely
+
+The above story was told in a stratified way. First, we create the infinite set
+of naturals. We take that set as given when creating instances of addition, so
+even on day one we have an infinite set of instances.
+
+Instead, we could choose to create both the naturals and the instances of
+addition at the same time. Then on any day there would be only a finite set of
+instances:
+```
+-- In the beginning, we know nothing.
+```
+Now, we apply the rules to all the judgment we know about. Only the base case
+for naturals applies:
+```
+-- On the first day, we know zero.
+0 : ℕ
+```
+Again, we apply all the rules we know. This gives us a new natural, and our
+first equation about addition.
+```
+-- On the second day, we know one and all sums that yield zero.
+0 : ℕ
+1 : ℕ    0 + 0 = 0
+```
+Then we repeat the process. We get one more equation about addition from the
+base case, and also get an equation from the inductive case, applied to
+equation of the previous day:
+```
+-- On the third day, we know two and all sums that yield one.
+0 : ℕ
+1 : ℕ    0 + 0 = 0
+2 : ℕ    0 + 1 = 1   1 + 0 = 1
+```
+:::noindent
+You've got the hang of it by now:
+:::
+```
+-- On the fourth day, we know three and all sums that yield two.
+0 : ℕ
+1 : ℕ    0 + 0 = 0
+2 : ℕ    0 + 1 = 1   1 + 0 = 1
+3 : ℕ    0 + 2 = 2   1 + 1 = 2    2 + 0 = 2
+```
+On the n'th day there will be n distinct natural numbers, and `n × (n-1) / 2`
+equations about addition. The number `n` and all equations for addition of
+numbers less than `n` first appear by day `n+1`. This gives an entirely
+finitist view of infinite sets of data and equations relating the data.
+
+# Exercise `Bin` (stretch)
+
+A more efficient representation of natural numbers uses a binary rather than a
+unary system. We represent a number as a bitstring:
+
+```lean
+inductive Bin : Type where
+    | empty  : Bin
+    | t_zero : Bin -> Bin
+    | t_one  : Bin -> Bin
+    deriving Repr
+
+syntax:80 (priority := high) "⟨⟩" : term
+syntax:81 term:80 "O" : term
+syntax:81 term:80 "I" : term
+macro_rules
+  | `(⟨⟩)        => `(Bin.empty)
+  | `($a:term O) => `(Bin.t_zero $a)
+  | `($a:term I) => `(Bin.t_one $a)
+```
+
+:::noindent
+So the bitstring:
+:::
+```
+1011
+```
+:::noindent
+would stand for the number eleven, encoded in our meta-introduced notation like so:
+```lean
+#eval ⟨⟩ I O I I
+```
+written desugared:
+```
+Bin.t_one (Bin.t_one (Bin.t_zero (Bin.t_one (Bin.empty))))
+```
+Representations are not unique due to leading zeroes. Hence eleven can also be
+represented by `0001011`, encoded as:
+```lean
+#eval ⟨⟩ O O I O I I
+```
+Define a function:
+```
+def inc : Bin -> Bin
+```
+that converts a bitstring to the bitstring for the next higher number.
+:::
