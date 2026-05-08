@@ -478,3 +478,6 @@ def inc : Bin -> Bin
 ```
 that converts a bitstring to the bitstring for the next higher number.
 :::
+
+:::pagebreak
+:::

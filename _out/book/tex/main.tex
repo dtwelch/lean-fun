@@ -151,6 +151,9 @@ title={#2},#1}
 \tableofcontents
 
 
+\cleardoublepage
+\clearpage
+
 
 \mainmatter
 \chapter{Part 1}\label{PLFA--in--Lean----Part--1}
@@ -808,8 +811,10 @@ of the most common properties:
 
 \begin{itemize}
 \item \emph{Identity}. Operator \LeanVerb|+| has left identity \LeanVerb|0| if \LeanVerb|0 + n = n|, and right
-identity if \LeanVerb|n + 0 = n|, for all \LeanVerb|n|.
-
+identity if \LeanVerb|n + 0 = n|, for all \LeanVerb|n|. A value that is both a left and right
+identity is just called an identity. Identity is also sometimes called \emph{unit}.
+\item \emph{Associativity}. Operator \LeanVerb|+| is associative if the location of the parentheses
+does not matter: \LeanVerb|(m + n) + p = m + (n + p)|
 
 \end{itemize}
 

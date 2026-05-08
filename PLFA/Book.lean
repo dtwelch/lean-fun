@@ -25,7 +25,8 @@ r#"
 %%%
 authors := ["Daniel"]
 %%%
-
+:::pagebreak
+:::
 # Part 1
 
 This part collects the early material on natural numbers and induction.
