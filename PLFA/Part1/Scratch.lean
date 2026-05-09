@@ -1,14 +1,10 @@
-inductive Bin : Type where
-    | empty  : Bin
-    | t_zero : Bin -> Bin
-    | t_one  : Bin -> Bin
-    deriving Repr
+import PLFA.Part1.Naturals
 
-syntax:80 (priority := high) "⟨⟩" : term
-syntax:81 term:80 "O" : term
-syntax:81 term:80 "I" : term
-macro_rules
-  | `(⟨⟩) => `(Bin.empty)
-  | `($a:term O) => `(Bin.t_zero $a)
-  | `($a:term I) => `(Bin.t_one $a)
-#eval ⟨⟩ I O I I
+theorem plus_assoc : ∀ (m n p : ℕ), (m + n) + p = m + (n + p) := by
+    intro m n p
+    induction m
+    | zero =>
+        calc
+            (.zero + n) + p = (n + p) := by rfl
+            _ = .zero + (n + p) := by rfl
+    | succ m ih => sorry
