@@ -25,7 +25,7 @@ def floor' : List Paren -> Int := λ parens0 =>
                 if floor < 0 then pos else loop ps (floor - 1) pos + 1
             | .lparen :: ps =>
                 if floor < 0 then pos else loop ps (floor + 1) pos + 1
-    loop parens0 0 1
+    loop parens0 0 0
 
 def readParen : Char -> (Except String Paren) :=
     λ ch =>
@@ -41,5 +41,10 @@ def read : String -> List Paren :=
          | Except.error _   => acc
         ) [] input
 
+---------------------- tests:
+-- day 1a:
 #eval floor $ read "))((((("
 
+-- day 1b:
+#eval floor' $ read ")"
+#eval floor' $ read "()())"
