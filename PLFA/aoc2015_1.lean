@@ -35,7 +35,7 @@ def readParen : Char -> (Except String Paren) :=
         | e   => Except.error ("unexpected: " ++ String.singleton e)
 
 def read : String -> List Paren :=
-    λ input => String.foldr (λ ch acc =>
+    λ input => String.foldr (λ ch => λ acc =>
         match readParen ch with
          | Except.ok v      => v :: acc
          | Except.error _   => acc
