@@ -9,7 +9,7 @@ inductive Move where
 | right : Move
 deriving Repr, DecidableEq, Hashable
 
-def trace : List Move -> Nat := λ moves0 =>
+def trace : List Move -> Std.HashSet (Int × Int):= λ moves0 =>
     let move : (Int × Int) -> Move -> (Int × Int) :=
         λ (x, y) => λ dir =>
             match dir with
@@ -21,15 +21,15 @@ def trace : List Move -> Nat := λ moves0 =>
     let rec loop : List Move -> Int × Int -> Std.HashSet (Int × Int) :=
         λ moves => λ currCoord =>
             match moves with
-            | []         => Std.HashSet.emptyWithCapacity
-            | m :: moves => Std.HashSet.union (Std.HashSet.ofList [ currCoord ]) $ loop moves (move currCoord m)
-    Std.HashSet.size $ loop moves0 (0, 0)
+            | []       => Std.HashSet.ofList [ currCoord ]
+            | m :: mvs => Std.HashSet.union (Std.HashSet.ofList [ currCoord ]) $ loop mvs (move currCoord m)
+    loop moves0 (0, 0)
 
 def parseMove : Char -> (Except String Move) :=
     λ ch =>
         match ch with
         | '^' => Except.ok .up
-        | 'v' => Except.ok .down
+        | 'v'  => Except.ok .down
         | '>' => Except.ok .right
         | '<' => Except.ok .left
         | e   => Except.error ("unexpected: " ++ String.singleton e)
@@ -40,5 +40,9 @@ def read : String -> List Move :=
          | Except.ok v      => v :: acc
          | Except.error _   => acc
         ) [] input
+
+#eval trace $ read ">"
+#eval trace $ read "^>v<"
+
 
 end Aoc.Day2
