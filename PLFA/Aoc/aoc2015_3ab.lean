@@ -18,12 +18,15 @@ def trace : List Move -> Nat := λ moves0 =>
             | .up    => (x, y - 1)
             | .down  => (x, y + 1)
 
-    let rec loop : List Move -> Int × Int -> Std.HashSet (Int × Int) :=
-        λ moves => λ currCoord =>
+    let rec loop : List Move -> Int × Int -> Std.HashSet (Int × Int) -> Std.HashSet (Int × Int) :=
+        λ moves => λ currCoord => λ seen =>
             match moves with
-            | []       => Std.HashSet.ofList [ currCoord ]
-            | m :: mvs => Std.HashSet.union (Std.HashSet.ofList [ currCoord ]) $ loop mvs (translate currCoord m)
-    Std.HashSet.size $ loop moves0 (0, 0)
+            | []       => Std.HashSet.emptyWithCapacity
+            | m :: mvs =>
+                let currSet := Std.HashSet.union seen $ Std.HashSet.ofList [ currCoord ]
+                loop mvs (translate currCoord m) currSet
+
+    Std.HashSet.size $ loop moves0 (0, 0) $ Std.HashSet.emptyWithCapacity
 
 def parseMove : Char -> (Except String Move) :=
     λ ch =>
