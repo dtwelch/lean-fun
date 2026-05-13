@@ -21,12 +21,11 @@ def trace : List Move -> Nat := λ moves0 =>
     let rec loop : List Move -> Int × Int -> Std.HashSet (Int × Int) -> Std.HashSet (Int × Int) :=
         λ moves => λ currCoord => λ seen =>
             match moves with
-            | []       => Std.HashSet.emptyWithCapacity
+            | []       => Std.HashSet.insert seen currCoord
             | m :: mvs =>
-                let currSet := Std.HashSet.union seen $ Std.HashSet.ofList [ currCoord ]
-                loop mvs (translate currCoord m) currSet
+                loop mvs (translate currCoord m) $ Std.HashSet.insert seen currCoord
 
-    Std.HashSet.size $ loop moves0 (0, 0) $ Std.HashSet.emptyWithCapacity
+    Std.HashSet.size $ loop moves0 (0, 0) $ Std.HashSet.ofList [ (0, 0) ]
 
 def parseMove : Char -> (Except String Move) :=
     λ ch =>
