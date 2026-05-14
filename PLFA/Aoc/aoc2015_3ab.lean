@@ -9,7 +9,8 @@ inductive Move where
 | right : Move
 deriving Repr, DecidableEq, Hashable
 
-def trace : List Move -> Nat := λ moves0 =>
+-- adjusted to just return the raw set (for reuse in part 2 ... we'll see..)
+def trace : List Move -> Std.HashSet (Int × Int) := λ moves0 =>
     let translate : (Int × Int) -> Move -> (Int × Int) :=
         λ (x, y) => λ dir =>
             match dir with
@@ -25,7 +26,7 @@ def trace : List Move -> Nat := λ moves0 =>
             | m :: mvs =>
                 loop mvs (translate currCoord m) $ Std.HashSet.insert seen currCoord
 
-    Std.HashSet.size $ loop moves0 (0, 0) $ Std.HashSet.ofList [ (0, 0) ]
+    loop moves0 (0, 0) $ Std.HashSet.ofList [ (0, 0) ]
 
 def parseMove : Char -> (Except String Move) :=
     λ ch =>
@@ -43,8 +44,16 @@ def read : String -> List Move :=
          | Except.error _   => acc
         ) [] input
 
-#eval trace $ read ">"          -- 2
-#eval trace $ read "^>v<"       -- 4
-#eval trace $ read "^v^v^v^v^v" -- 2
+def part1 : String -> Nat := λ input => Std.HashSet.size $ trace (read input)
+
+#eval part1 ">"          -- 2
+#eval part1 "^>v<"       -- 4
+#eval part1 "^v^v^v^v^v" -- 2
+
+-- part 2:
+
+-- (s₁ , s₂) moves for both santas... then just run the usual trace function
+--- and union the resulting sets
+def split : List Move := [] --todo
 
 end Aoc.Day2
