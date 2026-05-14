@@ -54,6 +54,17 @@ def part1 : String -> Nat := λ input => Std.HashSet.size $ trace (read input)
 
 -- (s₁ , s₂) moves for both santas... then just run the usual trace function
 --- and union the resulting sets
-def split : List Move := [] --todo
+def split : List Move -> (List Move × List Move) :=
+    λ moves =>
+        match moves with
+            | mᵢ :: mⱼ :: []  => ([mᵢ], [mⱼ])
+            | mᵢ :: mⱼ :: mvs => (mᵢ :: (Prod.fst $ split mvs), mⱼ :: (Prod.snd $ split mvs))
+            | _               => ([], [])
+
+def part2 : String -> Nat := λ input =>
+    Std.HashSet.size $
+        match (split $ (read input)) with
+            | (mvs₁, mvs₂) => Std.HashSet.union $ trace mvs₁ $ trace mvs₂
+
 
 end Aoc.Day2
