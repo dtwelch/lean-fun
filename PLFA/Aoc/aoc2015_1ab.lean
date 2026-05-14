@@ -28,7 +28,9 @@ def floor' : List Paren -> Int := λ parens0 =>
             | .lparen :: ps =>
                 if floor < 0 then pos else loop ps (floor + 1) pos + 1
     loop parens0 0 0
+
 #check Paren
+
 def readParen : Char -> (Except String Paren) :=
     λ ch =>
         match ch with
