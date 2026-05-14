@@ -66,6 +66,8 @@ def part2 : String -> Nat := λ input =>
         match (split $ (read input)) with
             | (mvs₁, mvs₂) => Std.HashSet.union (trace mvs₁) (trace mvs₂)
 
-#eval part2 "^v"          -- 3
+#eval part2 "^v"            -- 3
+#eval part2 "^>v<"          -- 3
+#eval part2 "^v^v^v^v^v"    -- 11
 
 end Aoc.Day2
