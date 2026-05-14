@@ -70,4 +70,6 @@ def part2 : String -> Nat := λ input =>
 #eval part2 "^>v<"          -- 3
 #eval part2 "^v^v^v^v^v"    -- 11
 
+-- #eval <puzzle input>     -- 2360
+
 end Aoc.Day2

@@ -3,8 +3,11 @@
 meager stab at working through some Programming Foundations in Agda (only here in Lean)
 original text: https://plfa.github.io/
 
-NOTE: in certain cases some of the surrounding text is pulled from the PLFA book verbatim 
-(all credit goes to the original PLFA book authors)
+> This repo's Lean 4-checked PDF rendering of the above book and some exercises is here:
+> [lean-fun/_out/tex/main.pdf](lean-fun/_out/tex/main.pdf)
+
+NOTE: most of the chapter text proper is pulled verbatim from the PLFA book 
+(all credit goes to the original PLFA book authors); 
 
 main bits:
 
