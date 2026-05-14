@@ -64,7 +64,8 @@ def split : List Move -> (List Move × List Move) :=
 def part2 : String -> Nat := λ input =>
     Std.HashSet.size $
         match (split $ (read input)) with
-            | (mvs₁, mvs₂) => Std.HashSet.union $ trace mvs₁ $ trace mvs₂
+            | (mvs₁, mvs₂) => Std.HashSet.union (trace mvs₁) (trace mvs₂)
 
+#eval part2 "^v"          -- 3
 
 end Aoc.Day2
