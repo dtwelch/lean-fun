@@ -7,6 +7,7 @@ structure Box where
     l : Nat
     w : Nat
     h : Nat
+deriving Repr
 
 #eval Std.Iter.toList (String.split "20x3x11\n15x27x5" "\n")
 
@@ -38,3 +39,21 @@ def part1 : List Box -> Nat :=
 #eval do
     let input <- IO.FS.readFile "PLFA/Aoc/day2.txt"
     IO.println (part1 (read input)) -- 1606483 (10k lines... so, do block it is)
+
+-- day 2:
+
+def ribbonAmtRequiredFor : Box -> Nat :=
+    λ b => match (b.l, b.w, b.h) with
+        | (l, w, h) =>
+            min (min (l + l + h + h) (w + w + h + h)) (w + w + l + l) + (l * w * h)
+
+def part2 : List Box -> Nat :=
+    λ boxes => List.foldl (λ acc b => acc + ribbonAmtRequiredFor b) 0 boxes
+
+#eval part2 $ read "2x3x4"
+
+#eval part2 $ read "1x1x10"
+
+#eval do
+    let input <- IO.FS.readFile "PLFA/Aoc/day2.txt"
+    IO.println (part2 (read input)) -- 1606483 (10k lines... so, do block it is)
