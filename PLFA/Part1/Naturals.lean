@@ -1,6 +1,7 @@
 import VersoManual
 import PLFA.VersoExtensions
 
+
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 

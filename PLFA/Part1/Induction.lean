@@ -1,24 +1,21 @@
 import VersoManual
 import PLFA.VersoExtensions
+import PLFA.Part1.Naturals
 
 open Verso.Genre Manual
 open Verso.Genre.Manual.InlineLean
 
 #doc (Manual) "Induction: Proof by Induction" =>
 
-:::noindent
 Now that we've defined the naturals and operations on them, our next step is to
 learn how to prove properties that they satisfy. As hinted by their name,
 properties of _inductive datatypes_ are proved by _induction_.
-:::
 
 # Properties of operators
 
-:::noindent
 Operations pop up all the time, and mathematicians have agreed on names for some
 of the most common properties.
-:::
-
+:::noindent
 * _Identity_. Operator `+` has left identity `0` if `0 + n = n`, and right
 identity if `n + 0 = n`, for all `n`. A value that is both a left and right
 identity is just called an identity. Identity is also sometimes called _unit_.
@@ -37,10 +34,12 @@ Addition has identity `0` and multiplication has identity `1`; addition and
 multiplication are both associative and commutative; and multiplication
 distributes over addition.
 
+:::
 # Associativity
 
 One property of addition is that it is associative, that is, that the location
 of the parentheses does not matter:
+:::noindent
 ```
 (m + n) + p ≡ m + (n + p)
 ```
@@ -67,25 +66,28 @@ appears. Why should `7 + 5` be the same as `3 + 9`? We might want to gather
 more evidence by testing the proposition with other numbers. But since there
 are infinitely many naturals, testing can never be complete. Is there any way
 we can be sure that associativity holds for all the natural numbers?
-
+:::
+:::noindent
 The answer is yes! We can prove a property holds for all naturals using proof by induction.
 
+:::
 # Proof by induction
 
 Recall that the definition of natural numbers consists of a base case which
 tells us that `zero` is a natural, and an inductive case which tells us that if
 `m` is a natural then `suc m` is also a natural.
 
+:::noindent
 Proof by induction follows the structure of this definition. To prove a property
 of natural numbers by induction, we need to prove two cases. First is the base
 case, where we show the property holds for `zero`. Second is the inductive case,
 where we assume the property holds for an arbitrary natural `m` (we call this
 the inductive hypothesis), and then show that the property must also hold for
 `suc m`.
-
+:::
 If we write `P m` for a property of `m`, then what we need to demonstrate are
 the following two inference rules:
-
+:::noindent
 ```
 ------
 P zero
@@ -94,15 +96,15 @@ P m
 ---------
 P (suc m)
 ```
-
-Let’s unpack these rules. The first rule is the base case, and requires us to
+:::
+Let's unpack these rules. The first rule is the base case, and requires us to
 show that property `P` holds for `zero`. The second rule is the inductive case,
 and requires us to show that if we assume the inductive hypothesis, namely that
 `P` holds for `m`, then it follows that `P` also holds for `suc m`.
 
 Why does this work? Again, it can be explained by a creation story. To start
 with, we know no properties:
-
+:::noindent
 ```
 -- in the beginning, no properties are known
 ```
@@ -141,7 +143,7 @@ P (suc zero)
 P (suc (suc zero))
 ```
 
-You’ve got the hang of it by now:
+You've got the hang of it by now:
 
 ```
 -- on the fourth day, four properties are known
@@ -154,9 +156,10 @@ P (suc (suc (suc zero)))
 The process continues. On the `n`-th day there will be `n` distinct properties
 that hold. The property of every natural number will appear on some given day.
 In particular, the property `P n` first appears on day `n + 1`.
-
+:::
 # Our first proof: associativity
 
+:::noindent
 To prove associativity, we take `P m` to be the property:
 
 `(m + n) + p ≡ m + (n + p)`
@@ -177,8 +180,106 @@ instances of the inference rules are:
 If we can demonstrate both of these, then associativity of addition follows by
 induction.
 
-Here is the proposition's statement:
+Here is the proposition's statement and proof:
 
-```lean4
-theorem plus-assoc : ∀ (m n p : ℕ), (m + n) + p = m + (n + p)
+```lean
+theorem plus_assoc :
+  ∀ (m n p : ℕ), (m + n) + p = m + (n + p) := by
+    intro m n p
+    induction m with
+    --goal: ∀ m n p : ℕ,
+    --      ⊢ plus (plus m n) p = plus m (plus n p)
+    | zero =>
+        calc
+            (.zero + n) + p = (n + p)   := by rfl
+            _ = .zero + (n + p)         := by rfl
+    | suc m ih =>
+        -- ih : plus (plus m n) p = plus m (plus n p)
+        calc
+            plus (plus (.suc m) n) p
+              = plus (.suc (plus m n)) p := by rfl
+            _ = .suc (plus m (plus n p)) := by
+              exact congrArg ℕ.suc (ih)
+            _ = .suc (plus m (plus n p)) := by rfl
+            _ = plus (.suc m) (plus n p) := by rfl
 ```
+Let's unpack this code. The signature states that we are defining the
+`plus_assoc`, which provides evidence for the proposition:
+```
+∀ (m n p : ℕ) -> (m + n) + p = m + (n + p)
+```
+The upside down A is pronounced "for all", and the proposition asserts that for
+all natural numbers `m`, `n`, and `p` the equation `(m + n) + p = m + (n + p)`
+holds. Evidence for the proposition is a function that accepts three natural
+numbers, binds them to `m`, `n`, and `p`, and returns evidence for the
+corresponding instance of the equation.
+
+For the base case, we must show:
+```
+(zero + n) + p = zero + (n + p)
+```
+Simplifying both sides with the base case of addition yields the equation:
+```
+n + p = n + p
+```
+This holds trivially. Reading the chain of equations in the base case of the
+proof, the top and bottom of the chain match the two sides of the equation to
+be shown, and reading down from the top and up from the bottom takes us to
+`n + p` in the middle. No justification other than simplification is required.
+:::
+
+## More on rewriting
+
+*NOTE:* The last step may look a little backwards at first. Right before the end
+of the inductive case (after rewriting using the inductive hypothesis `ih`)
+we are left with the term:
+:::noindent
+```
+.suc (plus m (plus n p))
+```
+but the right-hand side of the theorem wants to look like:
+```
+plus (.suc m) (plus n p)
+```
+The important point is that the defining equation for `plus` goes the other
+way when it computes:
+```
+plus (.suc m) k  -->  .suc (plus m k)
+```
+Here is the definition of `plus` recalled:
+```
+def plus : ℕ -> ℕ -> ℕ
+    | .zero , n    => n
+    | (.suc m) , n => .suc (plus m n)
+```
+So the term that directly matches the second clause of plus is not
+`.suc (plus m (plus n p))`. The term that directly matches is:
+```
+plus (.suc m) (plus n p)
+```
+and computing it gives:
+```
+.suc (plus m (plus n p))
+```
+So in the written proof, when we move from:
+```
+.suc (plus m (plus n p))
+```
+to:
+```
+plus (.suc m) (plus n p)
+```
+we are visually moving from the computed/unfolded form back to the folded-up
+form. From a human reader point of view, it is fine to think of this as
+"folding the definition of plus back up". But `rfl` is not really doing a
+directional rewrite here. It is checking that both sides compute to the same
+expression:
+```
+plus (.suc m) (plus n p)
+-- computes to
+.suc (plus m (plus n p))
+```
+In other words, both sides have the same normal form, so Lean accepts the step
+by `rfl`. This is the same kind of silent definitional-equality step that Agda
+writes explicitly as `≡⟨⟩`.
+:::

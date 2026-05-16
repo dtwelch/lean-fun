@@ -796,20 +796,18 @@ that converts a bitstring to the bitstring for the next higher number.
 
 \section{Induction: Proof by Induction}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction}
 
-\par\noindent Now that we've defined the naturals and operations on them, our next step is to
+Now that we've defined the naturals and operations on them, our next step is to
 learn how to prove properties that they satisfy. As hinted by their name,
 properties of \emph{inductive datatypes} are proved by \emph{induction}.
 
 
 
-
 \subsection{Properties of operators}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----Properties--of--operators}
 
-\par\noindent Operations pop up all the time, and mathematicians have agreed on names for some
+Operations pop up all the time, and mathematicians have agreed on names for some
 of the most common properties.
 
-
-\begin{itemize}
+\par\noindent \begin{itemize}
 \item \emph{Identity}. Operator \LeanVerb|+| has left identity \LeanVerb|0| if \LeanVerb|0 + n = n|, and right
 identity if \LeanVerb|n + 0 = n|, for all \LeanVerb|n|. A value that is both a left and right
 identity is just called an identity. Identity is also sometimes called \emph{unit}.
@@ -822,11 +820,10 @@ matter: \LeanVerb|m + n = n + m|, for all \LeanVerb|m| and \LeanVerb|n|.
 if \LeanVerb|(m + n) * p = (m * p) + (n * p)| for all \LeanVerb|m|, \LeanVerb|n|, and \LeanVerb|p|.
 
 \end{itemize}
-
-
 Addition has identity \LeanVerb|0| and multiplication has identity \LeanVerb|1|; addition and
 multiplication are both associative and commutative; and multiplication
 distributes over addition.
+
 
 
 
@@ -835,17 +832,11 @@ distributes over addition.
 One property of addition is that it is associative, that is, that the location
 of the parentheses does not matter:
 
-\begin{verbatim}
+\par\noindent \begin{verbatim}
 (m + n) + p ≡ m + (n + p)
 
 \end{verbatim}
-
-
-Here \LeanVerb|m|, \LeanVerb|n|, and \LeanVerb|p| are variables that range over all natural numbers.
-
-We can test the proposition by choosing specific numbers for the three variables:
-
-\begin{verbatim}
+Here \LeanVerb|m|, \LeanVerb|n|, and \LeanVerb|p| are variables that range over all natural numbers.We can test the proposition by choosing specific numbers for the three variables:\begin{verbatim}
 example : (3 + 4) + 5 = 3 + (4 + 5) := by
   calc
     (3 + 4) + 5 = 7 + 5 := by rfl
@@ -854,20 +845,18 @@ example : (3 + 4) + 5 = 3 + (4 + 5) := by
     _ = 3 + (4 + 5) := by rfl
 
 \end{verbatim}
-
-
 Here we have displayed the computation as a chain of equations, one term to a
 line. It is often easiest to read such chains from the top down until one
 reaches the simplest term (in this case, \LeanVerb|12|), and then from the bottom up
-until one reaches the same term.
-
-The test reveals that associativity is perhaps not as obvious as it first
+until one reaches the same term.The test reveals that associativity is perhaps not as obvious as it first
 appears. Why should \LeanVerb|7 + 5| be the same as \LeanVerb|3 + 9|? We might want to gather
 more evidence by testing the proposition with other numbers. But since there
 are infinitely many naturals, testing can never be complete. Is there any way
 we can be sure that associativity holds for all the natural numbers?
 
-The answer is yes! We can prove a property holds for all naturals using proof by induction.
+
+\par\noindent The answer is yes! We can prove a property holds for all naturals using proof by induction.
+
 
 
 
@@ -877,17 +866,18 @@ Recall that the definition of natural numbers consists of a base case which
 tells us that \LeanVerb|zero| is a natural, and an inductive case which tells us that if
 \LeanVerb|m| is a natural then \LeanVerb|suc m| is also a natural.
 
-Proof by induction follows the structure of this definition. To prove a property
+\par\noindent Proof by induction follows the structure of this definition. To prove a property
 of natural numbers by induction, we need to prove two cases. First is the base
 case, where we show the property holds for \LeanVerb|zero|. Second is the inductive case,
 where we assume the property holds for an arbitrary natural \LeanVerb|m| (we call this
 the inductive hypothesis), and then show that the property must also hold for
 \LeanVerb|suc m|.
 
+
 If we write \LeanVerb|P m| for a property of \LeanVerb|m|, then what we need to demonstrate are
 the following two inference rules:
 
-\begin{verbatim}
+\par\noindent \begin{verbatim}
 ------
 P zero
 
@@ -898,7 +888,8 @@ P (suc m)
 \end{verbatim}
 
 
-Let’s unpack these rules. The first rule is the base case, and requires us to
+
+Let's unpack these rules. The first rule is the base case, and requires us to
 show that property \LeanVerb|P| holds for \LeanVerb|zero|. The second rule is the inductive case,
 and requires us to show that if we assume the inductive hypothesis, namely that
 \LeanVerb|P| holds for \LeanVerb|m|, then it follows that \LeanVerb|P| also holds for \LeanVerb|suc m|.
@@ -906,95 +897,161 @@ and requires us to show that if we assume the inductive hypothesis, namely that
 Why does this work? Again, it can be explained by a creation story. To start
 with, we know no properties:
 
-\begin{verbatim}
--- In the beginning, no properties are known.
+\par\noindent \begin{verbatim}
+-- in the beginning, no properties are known
 
 \end{verbatim}
-
-
 Now, we apply the two rules to all the properties we know about. The base case
 tells us that \LeanVerb|P zero| holds, so we add it to the set of known properties. The
 inductive case tells us that if \LeanVerb|P m| holds on the day before today, then
 \LeanVerb|P (suc m)| also holds today. We didn’t know about any properties before today,
-so the inductive case doesn’t apply:
-
-\begin{verbatim}
--- On the first day, one property is known.
+so the inductive case doesn’t apply:\begin{verbatim}
+-- on the first day, one property is known
 P zero
 
 \end{verbatim}
-
-
 Then we repeat the process, so on the next day we know about all the properties
 from the day before, plus any properties added by the rules. The base case
 tells us that \LeanVerb|P zero| holds, but we already knew that. Now the inductive case
-tells us that since \LeanVerb|P zero| held yesterday, then \LeanVerb|P (suc zero)| holds today:
-
-\begin{verbatim}
--- On the second day, two properties are known.
+tells us that since \LeanVerb|P zero| held yesterday, then \LeanVerb|P (suc zero)| holds today:\begin{verbatim}
+-- on the second day, two properties are known
 P zero
 P (suc zero)
 
 \end{verbatim}
-
-
 And we repeat the process again. Now the inductive case tells us that since
 \LeanVerb|P zero| and \LeanVerb|P (suc zero)| both hold, then \LeanVerb|P (suc zero)| and
 \LeanVerb|P (suc (suc zero))| also hold. We already knew about the first of these, but
-the second is new:
-
-\begin{verbatim}
--- On the third day, three properties are known.
+the second is new:\begin{verbatim}
+-- on the third day, three properties are known
 P zero
 P (suc zero)
 P (suc (suc zero))
 
 \end{verbatim}
-
-
-You’ve got the hang of it by now:
-
-\begin{verbatim}
--- On the fourth day, four properties are known.
+You've got the hang of it by now:\begin{verbatim}
+-- on the fourth day, four properties are known
 P zero
 P (suc zero)
 P (suc (suc zero))
 P (suc (suc (suc zero)))
 
 \end{verbatim}
-
-
 The process continues. On the \LeanVerb|n|-th day there will be \LeanVerb|n| distinct properties
 that hold. The property of every natural number will appear on some given day.
 In particular, the property \LeanVerb|P n| first appears on day \LeanVerb|n + 1|.
 
 
 
+
 \subsection{Our first proof: associativity}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----Our--first--proof-005F-005F-005F--associativity}
 
-To prove associativity, we take \LeanVerb|P m| to be the property:
-
-\LeanVerb|(m + n) + p ≡ m + (n + p)|
-
-Here \LeanVerb|n| and \LeanVerb|p| are arbitrary natural numbers, so if we can show the equation
+\par\noindent To prove associativity, we take \LeanVerb|P m| to be the property:\LeanVerb|(m + n) + p ≡ m + (n + p)|Here \LeanVerb|n| and \LeanVerb|p| are arbitrary natural numbers, so if we can show the equation
 holds for all \LeanVerb|m| it will also hold for all \LeanVerb|n| and \LeanVerb|p|. The appropriate
-instances of the inference rules are:
-
-\begin{verbatim}
+instances of the inference rules are:\begin{verbatim}
 -------------------------------
-(zero + n) + p ≡ zero + (n + p)
+(zero + n) + p = zero + (n + p)
 
-(m + n) + p ≡ m + (n + p)
+(m + n) + p = m + (n + p)
 ---------------------------------
-(suc m + n) + p ≡ suc m + (n + p)
+(suc m + n) + p = suc m + (n + p)
 
 \end{verbatim}
-
-
 If we can demonstrate both of these, then associativity of addition follows by
-induction.
+induction.Here is the proposition's statement and proof:\begin{LeanVerbatim}
+\textbf{theorem} plus_assoc :
+  ∀ (\textit{m} \textit{n} \textit{p} : ℕ), (\textit{m} + \textit{n}) + \textit{p} = \textit{m} + (\textit{n} + \textit{p}) := \textbf{by}
+    \textbf{intro} \textit{m} \textit{n} \textit{p}
+    \textbf{induction} \textit{m} \textbf{with}
+    --goal: ∀ m n p : ℕ,
+    --      ⊢ plus (plus m n) p = plus m (plus n p)
+    \symbol{124} zero =>
+        \textbf{calc}
+            (.zero + \textit{n}) + \textit{p} = (\textit{n} + \textit{p})   := \textbf{by} \textbf{rfl}
+            _ = .zero + (\textit{n} + \textit{p})         := \textbf{by} \textbf{rfl}
+    \symbol{124} suc \textit{m} \textit{ih} =>
+        -- ih : plus (plus m n) p = plus m (plus n p)
+        \textbf{calc}
+            plus (plus (.suc \textit{m}) \textit{n}) \textit{p}
+              = plus (.suc (plus \textit{m} \textit{n})) \textit{p} := \textbf{by} \textbf{rfl}
+            _ = .suc (plus \textit{m} (plus \textit{n} \textit{p})) := \textbf{by}
+              \textbf{exact} congrArg ℕ.suc (\textit{ih})
+            _ = .suc (plus \textit{m} (plus \textit{n} \textit{p})) := \textbf{by} \textbf{rfl}
 
-Here is the proposition’s statement:
+\end{LeanVerbatim}
+Let's unpack this code. The signature states that we are defining the
+\LeanVerb|plus_assoc|, which provides evidence for the proposition:\begin{verbatim}
+∀ (m n p : ℕ) -> (m + n) + p = m + (n + p)
+
+\end{verbatim}
+The upside down A is pronounced "for all", and the proposition asserts that for
+all natural numbers \LeanVerb|m|, \LeanVerb|n|, and \LeanVerb|p| the equation \LeanVerb|(m + n) + p = m + (n + p)|
+holds. Evidence for the proposition is a function that accepts three natural
+numbers, binds them to \LeanVerb|m|, \LeanVerb|n|, and \LeanVerb|p|, and returns evidence for the
+corresponding instance of the equation.For the base case, we must show:\begin{verbatim}
+(zero + n) + p = zero + (n + p)
+
+\end{verbatim}
+Simplifying both sides with the base case of addition yields the equation:\begin{verbatim}
+n + p = n + p
+
+\end{verbatim}
+This holds trivially. Reading the chain of equations in the base case of the
+proof, the top and bottom of the chain match the two sides of the equation to
+be shown, and reading down from the top and up from the bottom takes us to
+\LeanVerb|n + p| in the middle. No justification other than simplification is required.
+
+
+
+
+\subsubsection{More on rewriting}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----Our--first--proof-005F-005F-005F--associativity----More--on--rewriting}
+
+\textbf{NOTE:} The last step may look a little backwards at first. At this point we
+have the term:
+
+\par\noindent \begin{verbatim}
+.suc (plus m (plus n p))
+
+\end{verbatim}
+but the right-hand side of the theorem wants to look like:\begin{verbatim}
+plus (.suc m) (plus n p)
+
+\end{verbatim}
+The important point is that the defining equation for plus goes the other
+way when it computes:\begin{verbatim}
+plus (.suc m) k  -->  .suc (plus m k)
+
+\end{verbatim}
+So the term that directly matches the second clause of plus is not
+\LeanVerb|.suc (plus m (plus n p))|. The term that directly matches is:\begin{verbatim}
+plus (.suc m) (plus n p)
+
+\end{verbatim}
+and computing it gives:\begin{verbatim}
+.suc (plus m (plus n p))
+
+\end{verbatim}
+So in the written proof, when we move from:\begin{verbatim}
+.suc (plus m (plus n p))
+
+\end{verbatim}
+to:\begin{verbatim}
+plus (.suc m) (plus n p)
+
+\end{verbatim}
+we are visually moving from the computed/unfolded form back to the folded-up
+form. From a human reader point of view, it is fine to think of this as
+"folding the definition of plus back up". But \LeanVerb|rfl| is not really doing a
+directional rewrite here. It is checking that both sides compute to the same
+expression:\begin{verbatim}
+plus (.suc m) (plus n p)
+-- computes to
+.suc (plus m (plus n p))
+
+\end{verbatim}
+In other words, both sides have the same normal form, so Lean accepts the step
+by \LeanVerb|rfl|. This is the same kind of silent definitional-equality step that Agda
+writes explicitly as \LeanVerb|≡⟨⟩|.
 
 
 
