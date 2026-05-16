@@ -977,6 +977,7 @@ induction.Here is the proposition's statement and proof:\begin{LeanVerbatim}
             _ = .suc (plus \textit{m} (plus \textit{n} \textit{p})) := \textbf{by}
               \textbf{exact} congrArg ℕ.suc (\textit{ih})
             _ = .suc (plus \textit{m} (plus \textit{n} \textit{p})) := \textbf{by} \textbf{rfl}
+            _ = plus (.suc \textit{m}) (plus \textit{n} \textit{p}) := \textbf{by} \textbf{rfl}
 
 \end{LeanVerbatim}
 Let's unpack this code. The signature states that we are defining the
@@ -1006,8 +1007,9 @@ be shown, and reading down from the top and up from the bottom takes us to
 
 \subsubsection{More on rewriting}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----Our--first--proof-005F-005F-005F--associativity----More--on--rewriting}
 
-\textbf{NOTE:} The last step may look a little backwards at first. At this point we
-have the term:
+\textbf{NOTE:} The last step may look a little backwards at first. Right before the end
+of the inductive case (after rewriting using the inductive hypothesis \LeanVerb|ih|)
+we are left with the term:
 
 \par\noindent \begin{verbatim}
 .suc (plus m (plus n p))
@@ -1017,9 +1019,15 @@ but the right-hand side of the theorem wants to look like:\begin{verbatim}
 plus (.suc m) (plus n p)
 
 \end{verbatim}
-The important point is that the defining equation for plus goes the other
+The important point is that the defining equation for \LeanVerb|plus| goes the other
 way when it computes:\begin{verbatim}
 plus (.suc m) k  -->  .suc (plus m k)
+
+\end{verbatim}
+Here is the definition of \LeanVerb|plus| recalled:\begin{verbatim}
+def plus : ℕ -> ℕ -> ℕ
+    | .zero , n    => n
+    | (.suc m) , n => .suc (plus m n)
 
 \end{verbatim}
 So the term that directly matches the second clause of plus is not
