@@ -195,6 +195,8 @@ theorem plus_assoc :
             _ = .zero + (n + p)         := by rfl
     | suc m ih =>
         -- ih : plus (plus m n) p = plus m (plus n p)
+        -- ind. case goal:
+        --  ⊢ plus (plus m.suc n) p = plus m.suc (plus n p)
         calc
             plus (plus (.suc m) n) p
               = plus (.suc (plus m n)) p := by rfl
@@ -203,8 +205,8 @@ theorem plus_assoc :
             _ = .suc (plus m (plus n p)) := by rfl
             _ = plus (.suc m) (plus n p) := by rfl
 ```
-Let's unpack this code. The signature states that we are defining the
-`plus_assoc`, which provides evidence for the proposition:
+Let's unpack this code. The signature states that we are defining a theorem,
+`plus_assoc`, which states a proposition:
 ```
 ∀ (m n p : ℕ) -> (m + n) + p = m + (n + p)
 ```
@@ -228,7 +230,7 @@ be shown, and reading down from the top and up from the bottom takes us to
 `n + p` in the middle. No justification other than simplification is required.
 :::
 
-## More on rewriting
+# More on rewriting
 
 *NOTE:* The last step may look a little backwards at first. Right before the end
 of the inductive case (after rewriting using the inductive hypothesis `ih`)
@@ -283,3 +285,8 @@ In other words, both sides have the same normal form, so Lean accepts the step
 by `rfl`. This is the same kind of silent definitional-equality step that Agda
 writes explicitly as `≡⟨⟩`.
 :::
+
+# Induction as Recursion
+
+As a concrete example of how induction corresponds to recursion, here is the
+computation that occurs when instantiating `m` to `2`
