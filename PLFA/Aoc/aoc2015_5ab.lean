@@ -22,8 +22,19 @@ def subs /-∀-/ {α : Type} : List α -> List (List α) :=
 #eval subs [0, 1] -- [ [] , [1] , [0] , [0, 1] ]
 #eval subs $ String.toList "abc" -- [[], ['c'], ['b'], ['b', 'c'], ['a'], ['a', 'c'], ['a', 'b'], ['a', 'b', 'c']]
 
+-- cartesian product:
+
+def cpair
+    /-∀-/ {α : Type}
+    /-∀-/ {β : Type} :
+        List α -> List β -> List (α × β)
+            --:= λ xs ys => match (xs, ys) with -- <-- the λ messes
+            --                          with the termination proof for some reason
+            | [], _             => []
+            | _, []             => []
+            | x :: xs, y :: ys  => (x, y) :: (cpair xs ys)
+        termination_by xs _ => List.length xs
+
+#eval cpair [1, 2, 3] ["a", "b", "c"]
 
 def part1 : String -> Bool := λ input => sorry
-
-
-
