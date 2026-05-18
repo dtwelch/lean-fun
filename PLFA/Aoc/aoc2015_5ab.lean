@@ -17,7 +17,11 @@ def distinct /-∀-/ {α : Type} [BEq α] : List α -> Bool :=
 def subs /-∀-/ {α : Type} : List α -> List (List α) :=
     λ input => match input with
         | []        => [[]] --or: List.map (List.cons x)    (subs xs) -- (cons partially applied)
-        | x :: xs   => subs xs ++ List.map (λ _ => x :: xs) (subs xs)
+        | x :: xs   => subs xs ++ List.map (λ xs' => x :: xs') (subs xs)
+
+#eval subs [0, 1] -- [ [] , [1] , [0] , [0, 1] ]
+#eval subs $ String.toList "abc" -- [[], ['c'], ['b'], ['b', 'c'], ['a'], ['a', 'c'], ['a', 'b'], ['a', 'b', 'c']]
+
 
 def part1 : String -> Bool := λ input => sorry
 
