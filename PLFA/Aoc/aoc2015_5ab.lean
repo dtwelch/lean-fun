@@ -35,6 +35,20 @@ def cpair
             | x :: xs, y :: ys  => (x, y) :: (cpair xs ys)
         termination_by xs _ => List.length xs
 
+def cartProdList
+    /-∀-/ {α : Type} : (List (List α)) -> List (List α)
+        | []                => [[]]
+        | xs :: xss  =>
+            -- List.map (λ ys => List.cons y ys) (cartProdList xss)
+            let ys := cartProdList xss
+            List.flatMap
+                (λ y => List.map (List.cons y) ys) xs
+
+def permscp /-∀-/ {α : Type} [BEq α] : List α -> List (List α) := sorry
+
+
+#eval cartProdList [ [1, 2], [3, 4] ]
+
 #eval cpair [1, 2, 3] ["a", "b", "c"]
 
 def part1 : String -> Bool := λ input => sorry
