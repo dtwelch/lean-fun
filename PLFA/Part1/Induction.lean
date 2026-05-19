@@ -323,7 +323,7 @@ theorem plusIdentityRight : ∀ (m : ℕ),  m + .zero = m := by
         calc
             plus (ℕ.suc m) ℕ.zero
           = .suc (plus m .zero) := by rfl
-        _ = .suc m             := by exact congrArg ℕ.suc ih
+        _ = .suc m              := by exact congrArg ℕ.suc ih
 ```
 The signature states that we are defining the identifier `plusIdentityRight`
 which provides evidence for the proposition:

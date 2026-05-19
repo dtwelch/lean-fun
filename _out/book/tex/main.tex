@@ -127,14 +127,46 @@ title={#2},#1}
 \setmonofont{DejaVu Sans Mono}
 
 \definecolor{textgray}{HTML}{2C2C2C}
+\definecolor{codecomment}{rgb}{0.497495, 0.497587, 0.497464}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{parskip}
+\usepackage{amsfonts}
 \AtBeginDocument{\color{textgray}}
 \renewcommand*{\chaptitlefont}{\sffamily\HUGE\color{textgray}}
 \renewcommand*{\chapnumfont}{\chaptitlefont}
 \setsecheadstyle{\sffamily\bfseries\Large\color{textgray}}
 \setsubsecheadstyle{\sffamily\bfseries\large\color{textgray}}
 \setsubsubsecheadstyle{\sffamily\bfseries\color{textgray}}
-\makeevenhead{headings}{\color{textgray}\thepage}{}{\slshape\color{textgray}\leftmark}
+\setmonofont{CMU Typewriter Text}
+\newfontfamily{\PLFASymbolFont}{DejaVu Sans Mono}[Scale=0.6]
+\newcommand{\PLFANat}{\ensuremath{\mathbb{N}}}
+\newcommand{\PLFAForall}{\ensuremath{\forall}}
+\newcommand{\PLFATo}{\ensuremath{\to}}
+\newcommand{\PLFAEquiv}{\ensuremath{\equiv}}
+\newcommand{\PLFATurnstile}{\ensuremath{\vdash}}
+\newcommand{\PLFASymbol}[1]{{\PLFASymbolFont #1}}
+
+% Keep the PDF viewer layout book-like, but stop memoir from alternating
+% recto/verso headers and blank-page behavior.
+\makeatletter
+\@twosidefalse
+\@mparswitchfalse
+\makeatother
+\let\cleardoublepage\clearpage
+\makeevenhead{headings}{\slshape\color{textgray}\rightmark}{}{\color{textgray}\thepage}
 \makeoddhead{headings}{\slshape\color{textgray}\rightmark}{}{\color{textgray}\thepage}
+
+% Verso emits fenced blocks as verbatim/LeanVerbatim. Tighten the display
+% spacing so code blocks do not leave a large hole before the next paragraph.
+\newcommand{\PLFACodeSize}{\normalsize}
+\newcommand{\PLFAFirstOfOne}[1]{#1}
+\newcommand{\PLFAComment}[1]{\textcolor{codecomment}{#1}}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}
+  {commandchars=\\\{\},formatcom=\ttfamily,fontsize=\PLFACodeSize,breaklines=true,baselinestretch=0.92,
+   listparameters={\setlength{\topsep}{0.25\baselineskip}\setlength{\partopsep}{0pt}\setlength{\parsep}{0pt}}}
+\RecustomVerbatimEnvironment{LeanVerbatim}{Verbatim}
+  {commandchars=\\\{\},formatcom=\ttfamily\let\textit\PLFAFirstOfOne,fontsize=\PLFACodeSize,breaklines=true,baselinestretch=0.92,
+   listparameters={\setlength{\topsep}{0.25\baselineskip}\setlength{\partopsep}{0pt}\setlength{\parsep}{0pt}}}
 
 \title{\sffamily PLFA in Lean}
 \author{\sffamily Daniel}
@@ -150,64 +182,69 @@ title={#2},#1}
 
 \tableofcontents
 
+\par
 
 \cleardoublepage
 \clearpage
 
+\par
 
 \mainmatter
 \chapter{Part 1}\label{PLFA--in--Lean----Part--1}
 
+\par
 This part collects the early material on natural numbers and induction.
 
-
+\par
 
 \section{Naturals}\label{PLFA--in--Lean----Part--1----Naturals}
 
+\par
 Most are familiar with the natural numbers:
 
+\par
 \begin{verbatim}
 0
 1
 2
 3
 ...
-
 \end{verbatim}
 
+\par
+\par\noindent and so on. The set of natural numbers \LeanVerb|\PLFANat{}| is inifite and we say that \LeanVerb|0|, \LeanVerb|1|,
+\LeanVerb|2|, \LeanVerb|3|, and are \textbf{values} of type \LeanVerb|\PLFANat{}| (otherwise indicated with: \LeanVerb|0 : \PLFANat{}|,
+\LeanVerb|1 : \PLFANat{}|,  etc.).
 
-\par\noindent and so on. The set of natural numbers \LeanVerb|ℕ| is inifite and we say that \LeanVerb|0|, \LeanVerb|1|,
-\LeanVerb|2|, \LeanVerb|3|, and are \textbf{values} of type \LeanVerb|ℕ| (otherwise indicated with: \LeanVerb|0 : ℕ|,
-\LeanVerb|1 : ℕ|,  etc.).
-
-
+\par
 Although there are infinitely many naturals, yet we can write down its
 definition in just a few lines. Here it is as a pair of inference rules:
 
+\par
 \begin{verbatim}
 --------
-zero : ℕ
+zero : \PLFANat{}
 
-m : ℕ
+m : \PLFANat{}
 --------
-suc m : ℕ
-
+suc m : \PLFANat{}
 \end{verbatim}
 
-
+\par
 And here is the definition in Lean:
 
+\par
 \begin{LeanVerbatim}
-\textbf{inductive} ℕ : Type \textbf{where}
-    \symbol{124} zero : ℕ
-    \symbol{124} suc  : ℕ -> ℕ
-
+\textbf{inductive} \PLFANat{} : Type \textbf{where}
+    \symbol{124} zero : \PLFANat{}
+    \symbol{124} suc  : \PLFANat{} -> \PLFANat{}
 \end{LeanVerbatim}
 
-
-Here \LeanVerb|ℕ| is the name of the datatype we are defining, and \LeanVerb|zero| and \LeanVerb|suc|
+\par
+Here \LeanVerb|\PLFANat{}| is the name of the datatype we are defining, and \LeanVerb|zero| and \LeanVerb|suc|
 (short for successor) are the \textbf{constructors} of the datatype.
 
+\par
 Both definitions above tell us two things:
 
 \begin{enumerate}
@@ -217,108 +254,115 @@ number.
 
 \end{enumerate}
 
-
+\par
 Further, these two rules give the \textbf{only} ways of creating natural numbers.
 Hence, the possible natural numbers are:
 
+\par
 \begin{verbatim}
 .zero
 .suc .zero
 .suc (.suc .zero)
 ...
-
 \end{verbatim}
 
-
+\par
 We write \LeanVerb|0| as the shorthand for the \LeanVerb|zero| constructor and \LeanVerb|1| as shorthand
 for \LeanVerb|suc zero|, the successor of zero, that is the number that comes after \LeanVerb|0|.
 
-
+\par
 
 \subsection{Exercise: \texttt{seven} (practice)}\label{PLFA--in--Lean----Part--1----Naturals----Exercise-005F-005F-005F----seven-----005FLPAR-005Fpractice-005FRPAR-005F}
 
+\par
 Write out \LeanVerb|7| in longhand.
 
+\par
 \textbf{potential sol:}
 
+\par
 \begin{LeanVerbatim}
-\textbf{def} seven : ℕ :=
+\textbf{def} seven : \PLFANat{} :=
   .suc $ .suc $ .suc $ .suc $ .suc $ .suc $ .suc .zero
-
 \end{LeanVerbatim}
 
-
-
+\par
 
 \subsection{Unpacking the inference rules}\label{PLFA--in--Lean----Part--1----Naturals----Unpacking--the--inference--rules}
 
+\par
 Let's unpack the Lean definition. the keyword \LeanVerb|inductive| tells us this is an
 inductive definition, that is, we are defining a new datatype with constructors.
 The phrase:
 
+\par
 \begin{verbatim}
-ℕ : Type
-
+\PLFANat{} : Type
 \end{verbatim}
 
-
-tells us that \LeanVerb|ℕ| is the name of the new data, type and that it is a \LeanVerb|Type|,
+\par
+tells us that \LeanVerb|\PLFANat{}| is the name of the new data, type and that it is a \LeanVerb|Type|,
 which is the way in Lean of saying that it is a type.
 
+\par
 The keyword \LeanVerb|where| is the name of the new datatype, and that is a \LeanVerb|Type|,
 which is the way in Lean of saying that it is a type. The keyword \LeanVerb|where|
 separates the declaration of the data from the declaration of its constructors.
 Each constructor is a declared on a separate line, which is indented to
 indicate that it belongs to the corresponding \LeanVerb|data| declaration. The lines:
 
+\par
 \begin{verbatim}
-zero : ℕ
-suc  : ℕ -> ℕ
-
+zero : \PLFANat{}
+suc  : \PLFANat{} -> \PLFANat{}
 \end{verbatim}
 
-
+\par
 give \emph{signatures} specifying the types of the constructors \LeanVerb|zero| and \LeanVerb|suc|.
 They tell us \LeanVerb|zero| is a natural number and that \LeanVerb|suc| takes a natural number as
 an argument and returns a natural number.
 
-You may have noticed that \LeanVerb|ℕ| and \LeanVerb|→| don't appear on your keyboard. They are
+\par
+You may have noticed that \LeanVerb|\PLFANat{}| and \LeanVerb|\PLFATo{}| don't appear on your keyboard. They are
 symbols in \emph{unicode}. At the end of each chapter is a list of all unicode
 symbols introduced in the chapter, including instruction on how to insert them
 into the editor (assuming you're using zed or intellij).
 
-
+\par
 
 \subsection{Lean4 Natural Literal Syntax}\label{PLFA--in--Lean----Part--1----Naturals----Lean4--Natural--Literal--Syntax}
 
+\par
 Lean4 already defines its own inductive type for the natural numbers and also
 supports integer literal syntax. We can hook into that sytax and relate it to
-our own \LeanVerb|ℕ| type with the following conversion function and typeclass instance
+our own \LeanVerb|\PLFANat{}| type with the following conversion function and typeclass instance
 implementation:
 
+\par
 \begin{LeanVerbatim}
-\textbf{def} convert : _root_.Nat -> ℕ
+\textbf{def} convert : _root_.Nat -> \PLFANat{}
     \symbol{124} _root_.Nat.zero   => .zero
     \symbol{124} _root_.Nat.succ \textit{n} => .suc (convert \textit{n})
 
-\textbf{instance} (\textit{n} : _root_.Nat) : OfNat ℕ \textit{n} \textbf{where}
+\textbf{instance} (\textit{n} : _root_.Nat) : OfNat \PLFANat{} \textit{n} \textbf{where}
     ofNat := convert \textit{n}
-
 \end{LeanVerbatim}
 
-
-
+\par
 
 \subsection{Operations on naturals are recursive functions}\label{PLFA--in--Lean----Part--1----Naturals----Operations--on--naturals--are--recursive--functions}
 
+\par
 Now that we have the natural numbers, what can we do with them? For instance,
 can we define arithmetic operations such as addition and multiplication?
 
+\par
 It turns out, each of these can be described as \emph{recursive} functions. Here is
-the definition of addition for the \LeanVerb|ℕ| type in lean4:
+the definition of addition for the \LeanVerb|\PLFANat{}| type in lean4:
 
+\par
 \begin{LeanVerbatim}
-\textbf{def} plus : ℕ -> ℕ -> ℕ
+\textbf{def} plus : \PLFANat{} -> \PLFANat{} -> \PLFANat{}
     \symbol{124} .zero , \textit{n}    => \textit{n}
     \symbol{124} (.suc \textit{m}) , \textit{n} => .suc (plus \textit{m} \textit{n})
 
@@ -326,37 +370,37 @@ the definition of addition for the \LeanVerb|ℕ| type in lean4:
 
 \textbf{macro_rules}
   \symbol{124} `($\textit{a} + $\textit{b}) => `(plus $\textit{a} $\textit{b})
-
 \end{LeanVerbatim}
 
-
-The first line of \LeanVerb|plus| gives its type: \LeanVerb|ℕ -> ℕ -> ℕ|, which indicates that
+\par
+The first line of \LeanVerb|plus| gives its type: \LeanVerb|\PLFANat{} -> \PLFANat{} -> \PLFANat{}|, which indicates that
 the \LeanVerb|plus| function accepts two naturals and returns a natural. The infix
 notation allows us to write plus using the usual infix \LeanVerb|+| notation. The
 \LeanVerb|priority := high| bit makes it more likely that uses of
 \LeanVerb|+| will get resolved to our custom \LeanVerb|plus| function (for our own natural
-number type (\LeanVerb|ℕ|) based on the surrounding context).
+number type (\LeanVerb|\PLFANat{}|) based on the surrounding context).
 
+\par
 If we write zero as \LeanVerb|0| and \LeanVerb|suc m| as \LeanVerb|1 + m|, the definition turns into two familiar equations:
 
+\par
 \begin{verbatim}
  0       + n  =  n
  (1 + m) + n  =  1 + (m + n)
-
 \end{verbatim}
 
-
+\par
 \par\noindent The first follows because zero is an identity for addition, and the second because addition is associative.
 In its most general form, associativity is written\begin{verbatim}
 (m + n) + p = m + (n + p)
-
 \end{verbatim}
 meaning the location of the parentheses is irrelevant.
 
-
+\par
 An example of how we can use these constructors (better more illustrative
 example second I think):
 
+\par
 \begin{LeanVerbatim}
 \textbf{example} : 3 + 2 = 5 :=
   \textbf{calc}
@@ -366,19 +410,20 @@ example second I think):
       _ = .suc (.suc (.suc (0 + 2))) := rfl
       _ = .suc (.suc (.suc 2))       := rfl
       _ = 5                          := rfl
-
 \end{LeanVerbatim}
 
-
+\par
 Note we could've expressed the theorem like so if we wanted to
 make it more clear in the local context that these literals are formed via our
-\LeanVerb|ℕ| type like so: \LeanVerb|example : 3 + 2 = (5 : ℕ)|
+\LeanVerb|\PLFANat{}| type like so: \LeanVerb|example : 3 + 2 = (5 : \PLFANat{})|
 
+\par
 Here's another version closer to the original PLFA text:
 
+\par
 \begin{LeanVerbatim}
 \textbf{section}
-\textbf{open} ℕ  -- so we don't need dots in front of each ctor
+\textbf{open} \PLFANat{}  \PLFAComment{-- so we don't need dots in front of each ctor}
 \textbf{example} : 2 + 3 = 5 :=
   \textbf{calc}
       2 + 3
@@ -388,51 +433,51 @@ Here's another version closer to the original PLFA text:
       _ = suc (suc (suc (suc (suc zero))))          := rfl
       _ = 5                                         := rfl
 \textbf{end}
-
 \end{LeanVerbatim}
 
-
-
+\par
 
 \subsection{Multiplication}\label{PLFA--in--Lean----Part--1----Naturals----Multiplication}
 
+\par
 Once we have defined addition, we can define multiplication as repeated
 addition:
 
+\par
 \begin{LeanVerbatim}
-\textbf{def} mult : ℕ -> ℕ -> ℕ
+\textbf{def} mult : \PLFANat{} -> \PLFANat{} -> \PLFANat{}
     \symbol{124} .zero, \warningDecorate{\textit{n}}      => .zero
     \symbol{124} (.suc \textit{m}), \textit{n}   => \textit{n} + (mult \textit{m} \textit{n})
 
--- infix syntax rules for infix syntax:
+\PLFAComment{-- infix syntax rules for infix syntax:}
 \textbf{syntax}:70 (\textbf{priority} := \textbf{high}) term:70 " * " term:71 : term
 
 \textbf{macro_rules}
   \symbol{124} `($\textit{a} * $\textit{b}) => `(mult $\textit{a} $\textit{b})
-
 \end{LeanVerbatim}
 
-
+\par
 \par\noindent Computing \LeanVerb|m * n| returns the sum of \LeanVerb|m| copies of \LeanVerb|n|. Again, rewriting turns
 the definition into two familiar equations:
 
-
+\par
 \begin{verbatim}
 0       * n  =  0
 (1 + m) * n  =  n + (m * n)
-
 \end{verbatim}
 
-
-
+\par
 
 \subsection{Exercise \texttt{*-example} (practice)}\label{PLFA--in--Lean----Part--1----Naturals----Exercise-----005F-005F-005F--example-----005FLPAR-005Fpractice-005FRPAR-005F}
 
+\par
 Compute \LeanVerb|3 * 4| writing out your reasoning as a chain of equations using the
 equations for \LeanVerb|*|. You do not need to step through the evaluation of \LeanVerb|+|
 
+\par
 \textbf{potential sol:}
 
+\par
 \begin{LeanVerbatim}
 \textbf{example} : 3 * 4 = 12 :=
     \textbf{calc}
@@ -443,27 +488,27 @@ equations for \LeanVerb|*|. You do not need to step through the evaluation of \L
     _ = 4 + (4 + (4 + 0))        := rfl
     _ = 4 + 4 + 4                := rfl
     _ = 12                       := rfl
-
 \end{LeanVerbatim}
 
-
-
+\par
 
 \subsection{Exercise exponentiation (recommended)}\label{PLFA--in--Lean----Part--1----Naturals----Exercise--exponentiation---005FLPAR-005Frecommended-005FRPAR-005F}
 
+\par
 Define exponentiation, which is given by the following equations:
 
+\par
 \begin{verbatim}
 m ^ 0           = 1
 m ^ (1 + n)     = m * (m^n)
-
 \end{verbatim}
 
-
+\par
 \textbf{potential sol:}
 
+\par
 \begin{LeanVerbatim}
-\textbf{def} exponent : ℕ -> ℕ -> ℕ
+\textbf{def} exponent : \PLFANat{} -> \PLFANat{} -> \PLFANat{}
     \symbol{124} \warningDecorate{\textit{m}} , 0         => 1
     \symbol{124} \textit{m} , (.suc \textit{n})  => \textit{m} * (exponent \textit{m} \textit{n})
 
@@ -471,46 +516,47 @@ m ^ (1 + n)     = m * (m^n)
 
 \textbf{macro_rules}
   \symbol{124} `($\textit{a} ^ $\textit{b}) => `(exponent $\textit{a} $\textit{b})
-
 \end{LeanVerbatim}
 
-
+\par
 Check that \LeanVerb|3 ^ 4| is \LeanVerb|81|:
 
+\par
 \begin{LeanVerbatim}
 \infoDecorate{\textbf{\symbol{35}check}} (3 ^ 4 = 81)
-
 \end{LeanVerbatim}
 
-
-
+\par
 
 \subsection{Monus}\label{PLFA--in--Lean----Part--1----Naturals----Monus}
 
+\par
 We can also define subtraction for natural numbers. Since there are no negative
 natural numbers, if we subtract a larger number from a smaller number we will
 take the result to be zero. This adaption of subtraction to naturals is called
 monus (a twist on \emph{minus}).
 
+\par
 Monus is our first use of a definition that uses pattern matching against both
 arguments:
 
+\par
 \begin{LeanVerbatim}
-\textbf{def} monus : ℕ -> ℕ -> ℕ
+\textbf{def} monus : \PLFANat{} -> \PLFANat{} -> \PLFANat{}
     \symbol{124} \textit{m}, .zero              => \textit{m}
     \symbol{124} .zero, (.suc \warningDecorate{\textit{n}})       => .zero
     \symbol{124} (.suc \textit{m}), (.suc \textit{n})    => monus \textit{m} \textit{n}
 
-\textbf{syntax}:80 (\textbf{priority} := \textbf{high}) term:81 " ∸ " term:80 : term
+\textbf{syntax}:80 (\textbf{priority} := \textbf{high}) term:81 " \PLFASymbol{∸} " term:80 : term
 
 \textbf{macro_rules}
-  \symbol{124} `($\textit{a} ∸ $\textit{b}) => `(monus $\textit{a} $\textit{b})
-
+  \symbol{124} `($\textit{a} \PLFASymbol{∸} $\textit{b}) => `(monus $\textit{a} $\textit{b})
 \end{LeanVerbatim}
 
-
+\par
 \par\noindent where lean performs case analysis to ensure that all the cases are covered.
 
+\par
 
 \begin{itemize}
 \item consider the second argument:
@@ -534,214 +580,226 @@ arguments:
 
 \end{itemize}
 
+\par
 
 \end{itemize}
 
-
+\par
 Lean will raise an error if all the cases are not covered. As with addition
 and multiplication, the recursive definition is well founded because monus on
 bigger numbers is defined in terms of monus on smaller numbers.
 
+\par
 For example, let's subtract two from three:
 
+\par
 \begin{LeanVerbatim}
-\textbf{example} : 3 ∸ 2 = 1 :=
+\textbf{example} : 3 \PLFASymbol{∸} 2 = 1 :=
     \textbf{calc}
-        2 ∸ 1
-      = 1 ∸ 0 := rfl
+        2 \PLFASymbol{∸} 1
+      = 1 \PLFASymbol{∸} 0 := rfl
     _ = 1     := rfl
-
 \end{LeanVerbatim}
 
-
+\par
 We did not use the second equation at all, but it will be required if we try to
 subtract a larger number from a smaller one:
 
+\par
 \begin{LeanVerbatim}
-\textbf{example} : 2 ∸ 3 = 0 :=
+\textbf{example} : 2 \PLFASymbol{∸} 3 = 0 :=
     \textbf{calc}
-        1 ∸ 2
-    _ = 0 ∸ 1        := rfl -- desugars to:
-    _ = 0 ∸ (.suc 0) := rfl
+        1 \PLFASymbol{∸} 2
+    _ = 0 \PLFASymbol{∸} 1        := rfl \PLFAComment{-- desugars to:}
+    _ = 0 \PLFASymbol{∸} (.suc 0) := rfl
     _ = 0            := rfl
-
 \end{LeanVerbatim}
 
-
-
+\par
 
 \subsection{Currying}\label{PLFA--in--Lean----Part--1----Naturals----Currying}
 
+\par
 We have chosen to represent a function of two arguments in terms of a function
 of the first argument that returns a function of the second argument. This trick
 goes by the name \emph{currying}.
 
+\par
 Lean4, like other functional languages such as Haskell and ML, is designed to
 make currying easy to use. Function arrows associate to the right and application
 associates to the left:
 
-\LeanVerb|ℕ -> ℕ -> ℕ| associates like so: \LeanVerb|ℕ -> (ℕ -> ℕ)|
+\par
+\LeanVerb|\PLFANat{} -> \PLFANat{} -> \PLFANat{}| associates like so: \LeanVerb|\PLFANat{} -> (\PLFANat{} -> \PLFANat{})|
 
+\par
 \par\noindent and
 
-
+\par
 \LeanVerb|plus 2 3| stands for \LeanVerb|(plus 2) 3|
 
+\par
 \par\noindent The term \LeanVerb|plus 2| by itself stands for the function that adds two to its
 argument, hence applying it to three yields five.
 
-
+\par
 Currying is named for Haskell B. Curry (a Penn State professor actually:
 https://www.hmdb.org/m.asp?m=134735;
 \href{https://mathshistory.st-andrews.ac.uk/Biographies/Curry/}{bio})
 
-
+\par
 
 \subsection{Story of creation, revisited}\label{PLFA--in--Lean----Part--1----Naturals----Story--of--creation-005F-005F-005F--revisited}
 
+\par
 Just as our inductive definition defines the naturals in terms of the naturals,
 so does our recursive definition define addition in terms of addition.
 
+\par
 Again we resort to a creation story, where this time we are concerned with
 judgments about addition:
 
+\par
 \begin{verbatim}
 -- In the beginning, we know nothing about addition.
-
 \end{verbatim}
 
-
+\par
 Now, we apply the rules to all the judgment we know about. The base case tells
 us that \LeanVerb|.zero + n = n| for every natural \LeanVerb|n|, so we add all those equations.
 The inductive case tells us that if \LeanVerb|m + n = p| (on the day before today) then
 \LeanVerb|suc m + n = suc p| (today). We didn't know any equations about addition before
 today, so that rule doesn't give us any new equations:
 
+\par
 \begin{verbatim}
 -- On the first day, we know about addition of 0.
 0 + 0 = 0     0 + 1 = 1    0 + 2 = 2     ...
-
 \end{verbatim}
 
-
+\par
 Then we repeat the process, so on the next day we know about all the equations
 from the day before, plus any equations added by the rules. The base case tells
 us nothing new, but now the inductive case adds more equations:
 
+\par
 \begin{verbatim}
 -- On the second day, we know about addition of 0 and 1.
 0 + 0 = 0     0 + 1 = 1     0 + 2 = 2     0 + 3 = 3     ...
 1 + 0 = 1     1 + 1 = 2     1 + 2 = 3     1 + 3 = 4     ...
-
 \end{verbatim}
 
-
+\par
 And we repeat the process again:
 
+\par
 \begin{verbatim}
 -- On the third day, we know about addition of 0, 1, and 2.
 0 + 0 = 0     0 + 1 = 1     0 + 2 = 2     0 + 3 = 3     ...
 1 + 0 = 1     1 + 1 = 2     1 + 2 = 3     1 + 3 = 4     ...
 2 + 0 = 2     2 + 1 = 3     2 + 2 = 4     2 + 3 = 5     ...
-
 \end{verbatim}
 
-
+\par
 You've got the hang of it by now:
 
+\par
 \begin{verbatim}
 -- On the fourth day, we know about addition of 0, 1, 2, and 3.
 0 + 0 = 0     0 + 1 = 1     0 + 2 = 2     0 + 3 = 3     ...
 1 + 0 = 1     1 + 1 = 2     1 + 2 = 3     1 + 3 = 4     ...
 2 + 0 = 2     2 + 1 = 3     2 + 2 = 4     2 + 3 = 5     ...
 3 + 0 = 3     3 + 1 = 4     3 + 2 = 5     3 + 3 = 6     ...
-
 \end{verbatim}
 
-
+\par
 The process continues. On the m'th day we will know all the equations where the
 first number is less than \LeanVerb|m|.
 
+\par
 As we can see, the reasoning that justifies inductive and recursive definitions
 is quite similar. They might be considered two sides of the same coin.
 
-
+\par
 
 \subsection{The story of creation, finitely}\label{PLFA--in--Lean----Part--1----Naturals----The--story--of--creation-005F-005F-005F--finitely}
 
+\par
 The above story was told in a stratified way. First, we create the infinite set
 of naturals. We take that set as given when creating instances of addition, so
 even on day one we have an infinite set of instances.
 
+\par
 Instead, we could choose to create both the naturals and the instances of
 addition at the same time. Then on any day there would be only a finite set of
 instances:
 
+\par
 \begin{verbatim}
 -- In the beginning, we know nothing.
-
 \end{verbatim}
 
-
+\par
 Now, we apply the rules to all the judgment we know about. Only the base case
 for naturals applies:
 
+\par
 \begin{verbatim}
 -- On the first day, we know zero.
-0 : ℕ
-
+0 : \PLFANat{}
 \end{verbatim}
 
-
+\par
 Again, we apply all the rules we know. This gives us a new natural, and our
 first equation about addition.
 
+\par
 \begin{verbatim}
 -- On the second day, we know one and all sums that yield zero.
-0 : ℕ
-1 : ℕ    0 + 0 = 0
-
+0 : \PLFANat{}
+1 : \PLFANat{}    0 + 0 = 0
 \end{verbatim}
 
-
+\par
 Then we repeat the process. We get one more equation about addition from the
 base case, and also get an equation from the inductive case, applied to
 equation of the previous day:
 
+\par
 \begin{verbatim}
 -- On the third day, we know two and all sums that yield one.
-0 : ℕ
-1 : ℕ    0 + 0 = 0
-2 : ℕ    0 + 1 = 1   1 + 0 = 1
-
+0 : \PLFANat{}
+1 : \PLFANat{}    0 + 0 = 0
+2 : \PLFANat{}    0 + 1 = 1   1 + 0 = 1
 \end{verbatim}
 
-
+\par
 \par\noindent You've got the hang of it by now:
 
-
+\par
 \begin{verbatim}
 -- On the fourth day, we know three and all sums that yield two.
-0 : ℕ
-1 : ℕ    0 + 0 = 0
-2 : ℕ    0 + 1 = 1   1 + 0 = 1
-3 : ℕ    0 + 2 = 2   1 + 1 = 2    2 + 0 = 2
-
+0 : \PLFANat{}
+1 : \PLFANat{}    0 + 0 = 0
+2 : \PLFANat{}    0 + 1 = 1   1 + 0 = 1
+3 : \PLFANat{}    0 + 2 = 2   1 + 1 = 2    2 + 0 = 2
 \end{verbatim}
 
-
-On the n'th day there will be n distinct natural numbers, and \LeanVerb|n × (n-1) / 2|
+\par
+On the n'th day there will be n distinct natural numbers, and \LeanVerb|n \PLFASymbol{×} (n-1) / 2|
 equations about addition. The number \LeanVerb|n| and all equations for addition of
 numbers less than \LeanVerb|n| first appear by day \LeanVerb|n+1|. This gives an entirely
 finitist view of infinite sets of data and equations relating the data.
 
-
+\par
 
 \subsection{Exercise \texttt{Bin} (stretch)}\label{PLFA--in--Lean----Part--1----Naturals----Exercise----Bin-----005FLPAR-005Fstretch-005FRPAR-005F}
 
+\par
 A more efficient representation of natural numbers uses a binary rather than a
 unary system. We represent a number as a bitstring:
 
+\par
 \begin{LeanVerbatim}
 \textbf{inductive} Bin : Type \textbf{where}
     \symbol{124} empty  : Bin
@@ -749,64 +807,61 @@ unary system. We represent a number as a bitstring:
     \symbol{124} t_one  : Bin -> Bin
     \textbf{deriving} Repr
 
-\textbf{syntax}:80 (\textbf{priority} := \textbf{high}) "⟨⟩" : term
+\textbf{syntax}:80 (\textbf{priority} := \textbf{high}) "\PLFASymbol{⟨}\PLFASymbol{⟩}" : term
 \textbf{syntax}:81 term:80 "O" : term
 \textbf{syntax}:81 term:80 "I" : term
 \textbf{macro_rules}
-  \symbol{124} `(⟨⟩)        => `(Bin.empty)
+  \symbol{124} `(\PLFASymbol{⟨}\PLFASymbol{⟩})        => `(Bin.empty)
   \symbol{124} `($\textit{a}:\textbf{term} \textbf{O}) => `(Bin.t_zero $\textit{a})
   \symbol{124} `($\textit{a}:\textbf{term} \textbf{I}) => `(Bin.t_one $\textit{a})
-
 \end{LeanVerbatim}
 
-
+\par
 \par\noindent So the bitstring:
 
-
+\par
 \begin{verbatim}
 1011
-
 \end{verbatim}
 
-
+\par
 \par\noindent would stand for the number eleven, encoded in our meta-introduced notation like so:\begin{LeanVerbatim}
-\infoDecorate{\textbf{\symbol{35}eval}} ⟨⟩ \textbf{I} \textbf{O} \textbf{I} \textbf{I}
-
+\infoDecorate{\textbf{\symbol{35}eval}} \PLFASymbol{⟨}\PLFASymbol{⟩} \textbf{I} \textbf{O} \textbf{I} \textbf{I}
 \end{LeanVerbatim}
 written desugared:\begin{verbatim}
 Bin.t_one (Bin.t_one (Bin.t_zero (Bin.t_one (Bin.empty))))
-
 \end{verbatim}
 Representations are not unique due to leading zeroes. Hence eleven can also be
 represented by \LeanVerb|0001011|, encoded as:\begin{LeanVerbatim}
-\infoDecorate{\textbf{\symbol{35}eval}} ⟨⟩ \textbf{O} \textbf{O} \textbf{I} \textbf{O} \textbf{I} \textbf{I}
-
+\infoDecorate{\textbf{\symbol{35}eval}} \PLFASymbol{⟨}\PLFASymbol{⟩} \textbf{O} \textbf{O} \textbf{I} \textbf{O} \textbf{I} \textbf{I}
 \end{LeanVerbatim}
 Define a function:\begin{verbatim}
 def inc : Bin -> Bin
-
 \end{verbatim}
 that converts a bitstring to the bitstring for the next higher number.
 
+\par
 
 \clearpage
 
-
-
+\par
 
 \section{Induction: Proof by Induction}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction}
 
+\par
 Now that we've defined the naturals and operations on them, our next step is to
 learn how to prove properties that they satisfy. As hinted by their name,
 properties of \emph{inductive datatypes} are proved by \emph{induction}.
 
-
+\par
 
 \subsection{Properties of operators}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----Properties--of--operators}
 
+\par
 Operations pop up all the time, and mathematicians have agreed on names for some
 of the most common properties.
 
+\par
 \par\noindent \begin{itemize}
 \item \emph{Identity}. Operator \LeanVerb|+| has left identity \LeanVerb|0| if \LeanVerb|0 + n = n|, and right
 identity if \LeanVerb|n + 0 = n|, for all \LeanVerb|n|. A value that is both a left and right
@@ -824,17 +879,17 @@ Addition has identity \LeanVerb|0| and multiplication has identity \LeanVerb|1|;
 multiplication are both associative and commutative; and multiplication
 distributes over addition.
 
-
-
+\par
 
 \subsection{Associativity}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----Associativity}
 
+\par
 One property of addition is that it is associative, that is, that the location
 of the parentheses does not matter:
 
+\par
 \par\noindent \begin{verbatim}
-(m + n) + p ≡ m + (n + p)
-
+(m + n) + p \PLFAEquiv{} m + (n + p)
 \end{verbatim}
 Here \LeanVerb|m|, \LeanVerb|n|, and \LeanVerb|p| are variables that range over all natural numbers.We can test the proposition by choosing specific numbers for the three variables:\begin{verbatim}
 example : (3 + 4) + 5 = 3 + (4 + 5) := by
@@ -843,7 +898,6 @@ example : (3 + 4) + 5 = 3 + (4 + 5) := by
     _ = 12 := by rfl
     _ = 3 + 9 := by rfl
     _ = 3 + (4 + 5) := by rfl
-
 \end{verbatim}
 Here we have displayed the computation as a chain of equations, one term to a
 line. It is often easiest to read such chains from the top down until one
@@ -854,18 +908,19 @@ more evidence by testing the proposition with other numbers. But since there
 are infinitely many naturals, testing can never be complete. Is there any way
 we can be sure that associativity holds for all the natural numbers?
 
-
+\par
 \par\noindent The answer is yes! We can prove a property holds for all naturals using proof by induction.
 
-
-
+\par
 
 \subsection{Proof by induction}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----Proof--by--induction}
 
+\par
 Recall that the definition of natural numbers consists of a base case which
 tells us that \LeanVerb|zero| is a natural, and an inductive case which tells us that if
 \LeanVerb|m| is a natural then \LeanVerb|suc m| is also a natural.
 
+\par
 \par\noindent Proof by induction follows the structure of this definition. To prove a property
 of natural numbers by induction, we need to prove two cases. First is the base
 case, where we show the property holds for \LeanVerb|zero|. Second is the inductive case,
@@ -873,10 +928,11 @@ where we assume the property holds for an arbitrary natural \LeanVerb|m| (we cal
 the inductive hypothesis), and then show that the property must also hold for
 \LeanVerb|suc m|.
 
-
+\par
 If we write \LeanVerb|P m| for a property of \LeanVerb|m|, then what we need to demonstrate are
 the following two inference rules:
 
+\par
 \par\noindent \begin{verbatim}
 ------
 P zero
@@ -884,22 +940,21 @@ P zero
 P m
 ---------
 P (suc m)
-
 \end{verbatim}
 
-
-
+\par
 Let's unpack these rules. The first rule is the base case, and requires us to
 show that property \LeanVerb|P| holds for \LeanVerb|zero|. The second rule is the inductive case,
 and requires us to show that if we assume the inductive hypothesis, namely that
 \LeanVerb|P| holds for \LeanVerb|m|, then it follows that \LeanVerb|P| also holds for \LeanVerb|suc m|.
 
+\par
 Why does this work? Again, it can be explained by a creation story. To start
 with, we know no properties:
 
+\par
 \par\noindent \begin{verbatim}
 -- in the beginning, no properties are known
-
 \end{verbatim}
 Now, we apply the two rules to all the properties we know about. The base case
 tells us that \LeanVerb|P zero| holds, so we add it to the set of known properties. The
@@ -908,7 +963,6 @@ inductive case tells us that if \LeanVerb|P m| holds on the day before today, th
 so the inductive case doesn’t apply:\begin{verbatim}
 -- on the first day, one property is known
 P zero
-
 \end{verbatim}
 Then we repeat the process, so on the next day we know about all the properties
 from the day before, plus any properties added by the rules. The base case
@@ -917,7 +971,6 @@ tells us that since \LeanVerb|P zero| held yesterday, then \LeanVerb|P (suc zero
 -- on the second day, two properties are known
 P zero
 P (suc zero)
-
 \end{verbatim}
 And we repeat the process again. Now the inductive case tells us that since
 \LeanVerb|P zero| and \LeanVerb|P (suc zero)| both hold, then \LeanVerb|P (suc zero)| and
@@ -927,7 +980,6 @@ the second is new:\begin{verbatim}
 P zero
 P (suc zero)
 P (suc (suc zero))
-
 \end{verbatim}
 You've got the hang of it by now:\begin{verbatim}
 -- on the fourth day, four properties are known
@@ -935,18 +987,17 @@ P zero
 P (suc zero)
 P (suc (suc zero))
 P (suc (suc (suc zero)))
-
 \end{verbatim}
 The process continues. On the \LeanVerb|n|-th day there will be \LeanVerb|n| distinct properties
 that hold. The property of every natural number will appear on some given day.
 In particular, the property \LeanVerb|P n| first appears on day \LeanVerb|n + 1|.
 
-
-
+\par
 
 \subsection{Our first proof: associativity}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----Our--first--proof-005F-005F-005F--associativity}
 
-\par\noindent To prove associativity, we take \LeanVerb|P m| to be the property:\LeanVerb|(m + n) + p ≡ m + (n + p)|Here \LeanVerb|n| and \LeanVerb|p| are arbitrary natural numbers, so if we can show the equation
+\par
+\par\noindent To prove associativity, we take \LeanVerb|P m| to be the property:\LeanVerb|(m + n) + p \PLFAEquiv{} m + (n + p)|Here \LeanVerb|n| and \LeanVerb|p| are arbitrary natural numbers, so if we can show the equation
 holds for all \LeanVerb|m| it will also hold for all \LeanVerb|n| and \LeanVerb|p|. The appropriate
 instances of the inference rules are:\begin{verbatim}
 -------------------------------
@@ -955,37 +1006,34 @@ instances of the inference rules are:\begin{verbatim}
 (m + n) + p = m + (n + p)
 ---------------------------------
 (suc m + n) + p = suc m + (n + p)
-
 \end{verbatim}
 If we can demonstrate both of these, then associativity of addition follows by
 induction.Here is the proposition's statement and proof:\begin{LeanVerbatim}
 \textbf{theorem} plus_assoc :
-  ∀ (\textit{m} \textit{n} \textit{p} : ℕ), (\textit{m} + \textit{n}) + \textit{p} = \textit{m} + (\textit{n} + \textit{p}) := \textbf{by}
+  \PLFAForall{} (\textit{m} \textit{n} \textit{p} : \PLFANat{}), (\textit{m} + \textit{n}) + \textit{p} = \textit{m} + (\textit{n} + \textit{p}) := \textbf{by}
     \textbf{intro} \textit{m} \textit{n} \textit{p}
     \textbf{induction} \textit{m} \textbf{with}
-    --goal: ∀ m n p : ℕ,
-    --      ⊢ plus (plus m n) p = plus m (plus n p)
+    \PLFAComment{--goal: \PLFAForall{} m n p : \PLFANat{},}
+    \PLFAComment{--      \PLFATurnstile{} plus (plus m n) p = plus m (plus n p)}
     \symbol{124} zero =>
         \textbf{calc}
             (.zero + \textit{n}) + \textit{p} = (\textit{n} + \textit{p})   := \textbf{by} \textbf{rfl}
             _ = .zero + (\textit{n} + \textit{p})         := \textbf{by} \textbf{rfl}
     \symbol{124} suc \textit{m} \textit{ih} =>
-        -- ih : plus (plus m n) p = plus m (plus n p)
-        -- ind. case goal:
-        --  ⊢ plus (plus m.suc n) p = plus m.suc (plus n p)
+        \PLFAComment{-- ih : plus (plus m n) p = plus m (plus n p)}
+        \PLFAComment{-- ind. case goal:}
+        \PLFAComment{--  \PLFATurnstile{} plus (plus m.suc n) p = plus m.suc (plus n p)}
         \textbf{calc}
             plus (plus (.suc \textit{m}) \textit{n}) \textit{p}
               = plus (.suc (plus \textit{m} \textit{n})) \textit{p} := \textbf{by} \textbf{rfl}
             _ = .suc (plus \textit{m} (plus \textit{n} \textit{p})) := \textbf{by}
-              \textbf{exact} congrArg ℕ.suc (\textit{ih})
+              \textbf{exact} congrArg \PLFANat{}.suc (\textit{ih})
             _ = .suc (plus \textit{m} (plus \textit{n} \textit{p})) := \textbf{by} \textbf{rfl}
             _ = plus (.suc \textit{m}) (plus \textit{n} \textit{p}) := \textbf{by} \textbf{rfl}
-
 \end{LeanVerbatim}
 Let's unpack this code. The signature states that we are defining a theorem,
 \LeanVerb|plus_assoc|, which states a proposition:\begin{verbatim}
-∀ (m n p : ℕ) -> (m + n) + p = m + (n + p)
-
+\PLFAForall{} (m n p : \PLFANat{}) -> (m + n) + p = m + (n + p)
 \end{verbatim}
 The upside down A is pronounced "for all", and the proposition asserts that for
 all natural numbers \LeanVerb|m|, \LeanVerb|n|, and \LeanVerb|p| the equation \LeanVerb|(m + n) + p = m + (n + p)|
@@ -993,61 +1041,52 @@ holds. Evidence for the proposition is a function that accepts three natural
 numbers, binds them to \LeanVerb|m|, \LeanVerb|n|, and \LeanVerb|p|, and returns evidence for the
 corresponding instance of the equation.For the base case, we must show:\begin{verbatim}
 (zero + n) + p = zero + (n + p)
-
 \end{verbatim}
 Simplifying both sides with the base case of addition yields the equation:\begin{verbatim}
 n + p = n + p
-
 \end{verbatim}
 This holds trivially. Reading the chain of equations in the base case of the
 proof, the top and bottom of the chain match the two sides of the equation to
 be shown, and reading down from the top and up from the bottom takes us to
 \LeanVerb|n + p| in the middle. No justification other than simplification is required.
 
-
-
+\par
 
 \subsection{More on rewriting}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----More--on--rewriting}
 
+\par
 \textbf{NOTE:} The last step may look a little backwards at first. Right before the end
 of the inductive case (after rewriting using the inductive hypothesis \LeanVerb|ih|)
 we are left with the term:
 
+\par
 \par\noindent \begin{verbatim}
 .suc (plus m (plus n p))
-
 \end{verbatim}
 but the right-hand side of the theorem wants to look like:\begin{verbatim}
 plus (.suc m) (plus n p)
-
 \end{verbatim}
 The important point is that the defining equation for \LeanVerb|plus| goes the other
 way when it computes:\begin{verbatim}
 plus (.suc m) k  -->  .suc (plus m k)
-
 \end{verbatim}
 Here is the definition of \LeanVerb|plus| recalled:\begin{verbatim}
-def plus : ℕ -> ℕ -> ℕ
+def plus : \PLFANat{} -> \PLFANat{} -> \PLFANat{}
     | .zero , n    => n
     | (.suc m) , n => .suc (plus m n)
-
 \end{verbatim}
 So the term that directly matches the second clause of plus is not
 \LeanVerb|.suc (plus m (plus n p))|. The term that directly matches is:\begin{verbatim}
 plus (.suc m) (plus n p)
-
 \end{verbatim}
 and computing it gives:\begin{verbatim}
 .suc (plus m (plus n p))
-
 \end{verbatim}
 So in the written proof, when we move from:\begin{verbatim}
 .suc (plus m (plus n p))
-
 \end{verbatim}
 to:\begin{verbatim}
 plus (.suc m) (plus n p)
-
 \end{verbatim}
 we are visually moving from the computed/unfolded form back to the folded-up
 form. From a human reader point of view, it is fine to think of this as
@@ -1057,42 +1096,62 @@ expression:\begin{verbatim}
 plus (.suc m) (plus n p)
 -- computes to
 .suc (plus m (plus n p))
-
 \end{verbatim}
 In other words, both sides have the same normal form, so Lean accepts the step
 by \LeanVerb|rfl|. This is the same kind of silent definitional-equality step that Agda
-writes explicitly as \LeanVerb|≡⟨⟩|.
+writes explicitly as \LeanVerb|\PLFAEquiv{}\PLFASymbol{⟨}\PLFASymbol{⟩}|.
 
-
-
+\par
 
 \subsection{Second proof: commutativity}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----Second--proof-005F-005F-005F--commutativity}
 
+\par
 Another import property of addition is that it is \emph{commutative}, that is, that
 the the order of the operands does not matter:
 \LeanVerb|m + n = n + m|
 
+\par
 \par\noindent The proof requires that we first demonstrate two lemmas.
 
-
-
+\par
 
 \subsubsection{The first lemma}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----Second--proof-005F-005F-005F--commutativity----The--first--lemma}
 
+\par
 The base case of the definition of addition states that zero is a left identity.
 
+\par
 \par\noindent \begin{verbatim}
 .zero + n = n
-
 \end{verbatim}
 Our first lemma states that zero is also a right identity:\begin{verbatim}
 m + .zero = m
-
 \end{verbatim}
-Here is the lemma's statement and proof:
+Here is the lemma's statement and proof:\begin{LeanVerbatim}
+\textbf{theorem} plusIdentityRight : \PLFAForall{} (\textit{m} : \PLFANat{}),  \textit{m} + .zero = \textit{m} := \textbf{by}
+    \textbf{intro} \textit{m}
+    \textbf{induction} \textit{m} \textbf{with}
+    \PLFAComment{-- goal: plus \PLFANat{}.zero \PLFANat{}.zero = \PLFANat{}.zero}
+    \symbol{124} zero =>
+        \textbf{calc}
+                plus \PLFANat{}.zero \PLFANat{}.zero
+            =   \PLFANat{}.zero := \textbf{by} \textbf{rfl}
+    \PLFAComment{-- goal: plus (\PLFANat{}.suc m) \PLFANat{}.zero = \PLFANat{}.suc m}
+    \PLFAComment{--       ih : plus m \PLFANat{}.zero = m}
+    \symbol{124} suc \textit{m} \textit{ih} =>
+        \textbf{calc}
+            plus (\PLFANat{}.suc \textit{m}) \PLFANat{}.zero
+          = .suc (plus \textit{m} .zero) := \textbf{by} \textbf{rfl}
+        _ = .suc \textit{m}              := \textbf{by} \textbf{exact} congrArg \PLFANat{}.suc \textit{ih}
+\end{LeanVerbatim}
+The signature states that we are defining the identifier \LeanVerb|plusIdentityRight|
+which provides evidence for the proposition:\begin{verbatim}
+\PLFAForall{} (m : \PLFANat{}),  m + .zero = m
+\end{verbatim}
+evidence for the proposition is a function that accepts a natural number, binds
+it to \LeanVerb|m|, and returns evidence for the corresponding instance of the equation.
+The proof uses lean4's induction tactic on \LeanVerb|m|.For the base case, we must show:
 
-
-
-
+\par
 
 \end{document}

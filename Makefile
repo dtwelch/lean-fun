@@ -3,7 +3,8 @@ LATEXMK_BIN ?= /Library/TeX/texbin/latexmk
 OUT_DIR ?= _out/book
 TEX_CACHE_DIR ?= /tmp/lean-fun-texmf-cache
 LEAN_SOURCES := $(shell find PLFA -type f -name '*.lean' | sort)
-BOOK_DEPS := Makefile lakefile.lean lake-manifest.json lean-toolchain $(LEAN_SOURCES)
+BOOK_TEX_POSTPROCESS := scripts/postprocess-book-tex.pl
+BOOK_DEPS := Makefile lakefile.lean lake-manifest.json lean-toolchain $(LEAN_SOURCES) $(BOOK_TEX_POSTPROCESS)
 
 .PHONY: all tex book pdf clean
 
@@ -17,6 +18,7 @@ build: .lake/build/lib/lean/PLFA.olean
 $(OUT_DIR)/tex/main.tex: $(BOOK_DEPS)
 	@mkdir -p "$(OUT_DIR)"
 	@lake -q exe plfaBook --output "$(OUT_DIR)" --with-tex --without-html-single --without-html-multi
+	@perl scripts/postprocess-book-tex.pl "$(OUT_DIR)/tex/main.tex"
 
 tex: $(OUT_DIR)/tex/main.tex
 
