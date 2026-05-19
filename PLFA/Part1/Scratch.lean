@@ -1,5 +1,8 @@
 import PLFA.Part1.Naturals
 
+-- makes it so it doesn't do m.suc but rather .suc m (it's not a field..)
+set_option pp.fieldNotation false
+
 theorem plus_assoc : ∀ (m n p : ℕ), (m + n) + p = m + (n + p) := by
     intro m n p
     induction m with
