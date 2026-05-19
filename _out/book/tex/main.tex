@@ -971,6 +971,8 @@ induction.Here is the proposition's statement and proof:\begin{LeanVerbatim}
             _ = .zero + (\textit{n} + \textit{p})         := \textbf{by} \textbf{rfl}
     \symbol{124} suc \textit{m} \textit{ih} =>
         -- ih : plus (plus m n) p = plus m (plus n p)
+        -- ind. case goal:
+        --  ⊢ plus (plus m.suc n) p = plus m.suc (plus n p)
         \textbf{calc}
             plus (plus (.suc \textit{m}) \textit{n}) \textit{p}
               = plus (.suc (plus \textit{m} \textit{n})) \textit{p} := \textbf{by} \textbf{rfl}
@@ -980,8 +982,8 @@ induction.Here is the proposition's statement and proof:\begin{LeanVerbatim}
             _ = plus (.suc \textit{m}) (plus \textit{n} \textit{p}) := \textbf{by} \textbf{rfl}
 
 \end{LeanVerbatim}
-Let's unpack this code. The signature states that we are defining the
-\LeanVerb|plus_assoc|, which provides evidence for the proposition:\begin{verbatim}
+Let's unpack this code. The signature states that we are defining a theorem,
+\LeanVerb|plus_assoc|, which states a proposition:\begin{verbatim}
 ∀ (m n p : ℕ) -> (m + n) + p = m + (n + p)
 
 \end{verbatim}
@@ -1005,7 +1007,7 @@ be shown, and reading down from the top and up from the bottom takes us to
 
 
 
-\subsubsection{More on rewriting}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----Our--first--proof-005F-005F-005F--associativity----More--on--rewriting}
+\subsection{More on rewriting}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----More--on--rewriting}
 
 \textbf{NOTE:} The last step may look a little backwards at first. Right before the end
 of the inductive case (after rewriting using the inductive hypothesis \LeanVerb|ih|)
@@ -1060,6 +1062,34 @@ plus (.suc m) (plus n p)
 In other words, both sides have the same normal form, so Lean accepts the step
 by \LeanVerb|rfl|. This is the same kind of silent definitional-equality step that Agda
 writes explicitly as \LeanVerb|≡⟨⟩|.
+
+
+
+
+\subsection{Second proof: commutativity}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----Second--proof-005F-005F-005F--commutativity}
+
+Another import property of addition is that it is \emph{commutative}, that is, that
+the the order of the operands does not matter:
+\LeanVerb|m + n = n + m|
+
+\par\noindent The proof requires that we first demonstrate two lemmas.
+
+
+
+
+\subsubsection{The first lemma}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----Second--proof-005F-005F-005F--commutativity----The--first--lemma}
+
+The base case of the definition of addition states that zero is a left identity.
+
+\par\noindent \begin{verbatim}
+.zero + n = n
+
+\end{verbatim}
+Our first lemma states that zero is also a right identity:\begin{verbatim}
+m + .zero = m
+
+\end{verbatim}
+Here is the lemma's statement and proof:
 
 
 

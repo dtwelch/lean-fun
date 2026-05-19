@@ -286,7 +286,53 @@ by `rfl`. This is the same kind of silent definitional-equality step that Agda
 writes explicitly as `≡⟨⟩`.
 :::
 
-# Induction as Recursion
+# Second proof: commutativity
 
-As a concrete example of how induction corresponds to recursion, here is the
-computation that occurs when instantiating `m` to `2`
+Another import property of addition is that it is _commutative_, that is, that
+the the order of the operands does not matter:
+`m + n = n + m`
+:::noindent
+The proof requires that we first demonstrate two lemmas.
+:::
+
+## The first lemma
+
+The base case of the definition of addition states that zero is a left identity.
+
+:::noindent
+```
+.zero + n = n
+```
+Our first lemma states that zero is also a right identity:
+```
+m + .zero = m
+```
+Here is the lemma's statement and proof:
+```lean
+theorem plusIdentityRight : ∀ (m : ℕ),  m + .zero = m := by
+    intro m
+    induction m with
+    -- goal: plus ℕ.zero ℕ.zero = ℕ.zero
+    | zero =>
+        calc
+                plus ℕ.zero ℕ.zero
+            =   ℕ.zero := by rfl
+    -- goal: plus (ℕ.suc m) ℕ.zero = ℕ.suc m
+    --       ih : plus m ℕ.zero = m
+    | suc m ih =>
+        calc
+            plus (ℕ.suc m) ℕ.zero
+          = .suc (plus m .zero) := by rfl
+        _ = .suc m             := by exact congrArg ℕ.suc ih
+```
+The signature states that we are defining the identifier `plusIdentityRight`
+which provides evidence for the proposition:
+```
+∀ (m : ℕ),  m + .zero = m
+```
+evidence for the proposition is a function that accepts a natural number, binds
+it to `m`, and returns evidence for the corresponding instance of the equation.
+The proof uses lean4's induction tactic on `m`.
+
+For the base case, we must show:
+:::
