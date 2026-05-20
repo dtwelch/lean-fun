@@ -90,11 +90,11 @@ the following two inference rules:
 :::noindent
 ```
 ------
-P zero
+P .zero
 
 P m
 ---------
-P (suc m)
+P (.suc m)
 ```
 :::
 Let's unpack these rules. The first rule is the base case, and requires us to
@@ -117,7 +117,7 @@ so the inductive case doesn’t apply:
 
 ```
 -- on the first day, one property is known
-P zero
+P .zero
 ```
 
 Then we repeat the process, so on the next day we know about all the properties
@@ -127,8 +127,8 @@ tells us that since `P zero` held yesterday, then `P (suc zero)` holds today:
 
 ```
 -- on the second day, two properties are known
-P zero
-P (suc zero)
+P .zero
+P (.suc .zero)
 ```
 
 And we repeat the process again. Now the inductive case tells us that since
@@ -138,19 +138,19 @@ the second is new:
 
 ```
 -- on the third day, three properties are known
-P zero
-P (suc zero)
-P (suc (suc zero))
+P .zero
+P (.suc .zero)
+P (.suc (.suc .zero))
 ```
 
 You've got the hang of it by now:
 
 ```
 -- on the fourth day, four properties are known
-P zero
-P (suc zero)
-P (suc (suc zero))
-P (suc (suc (suc zero)))
+P  .zero
+P (.suc .zero)
+P (.suc (.suc .zero))
+P (.suc (.suc (.suc .zero)))
 ```
 
 The process continues. On the `n`-th day there will be `n` distinct properties
@@ -161,20 +161,20 @@ In particular, the property `P n` first appears on day `n + 1`.
 
 :::noindent
 To prove associativity, we take `P m` to be the property:
-
-`(m + n) + p ≡ m + (n + p)`
-
+```
+plus (plus m n) p = plus m (plus n p)`
+```
 Here `n` and `p` are arbitrary natural numbers, so if we can show the equation
 holds for all `m` it will also hold for all `n` and `p`. The appropriate
 instances of the inference rules are:
 
 ```
 -------------------------------
-(zero + n) + p = zero + (n + p)
+plus (plus .zero n) p = plus .zero (plus n p)
 
-(m + n) + p = m + (n + p)
+plus (plus m n) p = plus m (plus n p)
 ---------------------------------
-(suc m + n) + p = suc m + (n + p)
+(.suc (plus (plus m n) p) = .suc (plus m (plus n p))
 ```
 
 If we can demonstrate both of these, then associativity of addition follows by
@@ -218,11 +218,11 @@ corresponding instance of the equation.
 
 For the base case, we must show:
 ```
-(zero + n) + p = zero + (n + p)
+plus (plus .zero n) p = plus .zero (plus n p)
 ```
 Simplifying both sides with the base case of addition yields the equation:
 ```
-n + p = n + p
+plus n p = plus n p
 ```
 This holds trivially. Reading the chain of equations in the base case of the
 proof, the top and bottom of the chain match the two sides of the equation to
@@ -290,7 +290,7 @@ writes explicitly as `≡⟨⟩`.
 
 Another import property of addition is that it is _commutative_, that is, that
 the the order of the operands does not matter:
-`m + n = n + m`
+`plus m n = plus n m`
 :::noindent
 The proof requires that we first demonstrate two lemmas.
 :::
@@ -301,11 +301,11 @@ The base case of the definition of addition states that zero is a left identity.
 
 :::noindent
 ```
-.zero + n = n
+plus .zero n = n
 ```
 Our first lemma states that zero is also a right identity:
 ```
-m + .zero = m
+plus m .zero = m
 ```
 Here is the lemma's statement and proof:
 ```lean
@@ -323,7 +323,7 @@ theorem plusIdentityRight : ∀ (m : ℕ),  m + .zero = m := by
         calc
             plus (ℕ.suc m) ℕ.zero
           = .suc (plus m .zero) := by rfl
-        _ = .suc m              := by exact congrArg ℕ.suc ih
+        _ = .suc m             := by exact congrArg ℕ.suc ih
 ```
 The signature states that we are defining the identifier `plusIdentityRight`
 which provides evidence for the proposition:
@@ -335,4 +335,37 @@ it to `m`, and returns evidence for the corresponding instance of the equation.
 The proof uses lean4's induction tactic on `m`.
 
 For the base case, we must show:
+```
+plus .zero .zero = .zero
+```
+simplifying with the base case of addition, this is straightforward.
+
+For the inductive case, we must show:
+```
+plus (.suc m) .zero = .suc m
+```
+Simplifying both sides with the inductive case of addition yields the equation:
+```
+.suc (.plus m zero) = .suc m
+```
+This in turn follows by prefacing `.suc` to both sides of the induction hypothesis:
+```
+plus m .zero = m
+```
+Reading the chain of equations down from the top and up from the bottom takes us to
+the simplified equation above. The remaining equation has the justification:
+```
+exact congrArg ℕ.suc ih
+```
+where `exact` is a tactic that automatically closes the goal in the event that the
+shape of the equation that results from `congrArg N.suc ih` is automatically dischargeable...
+`congArg N.suc ih` has the effect of tacking the successor (`.suc`) on both the
+left hand side and right hand side of the inductive hypothesis arg... here is the sig
+for `congArg`:
+```
+∀ {α β : Sort} ->
+∀ {a1 a2 : α} ->
+∀ (f : α -> β) ->
+∀ (h : a1 = a2) -> f a1 = f a2
+```
 :::

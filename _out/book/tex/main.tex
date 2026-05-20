@@ -935,11 +935,11 @@ the following two inference rules:
 \par
 \par\noindent \begin{verbatim}
 ------
-P zero
+P .zero
 
 P m
 ---------
-P (suc m)
+P (.suc m)
 \end{verbatim}
 
 \par
@@ -962,31 +962,31 @@ inductive case tells us that if \LeanVerb|P m| holds on the day before today, th
 \LeanVerb|P (suc m)| also holds today. We didn’t know about any properties before today,
 so the inductive case doesn’t apply:\begin{verbatim}
 -- on the first day, one property is known
-P zero
+P .zero
 \end{verbatim}
 Then we repeat the process, so on the next day we know about all the properties
 from the day before, plus any properties added by the rules. The base case
 tells us that \LeanVerb|P zero| holds, but we already knew that. Now the inductive case
 tells us that since \LeanVerb|P zero| held yesterday, then \LeanVerb|P (suc zero)| holds today:\begin{verbatim}
 -- on the second day, two properties are known
-P zero
-P (suc zero)
+P .zero
+P (.suc .zero)
 \end{verbatim}
 And we repeat the process again. Now the inductive case tells us that since
 \LeanVerb|P zero| and \LeanVerb|P (suc zero)| both hold, then \LeanVerb|P (suc zero)| and
 \LeanVerb|P (suc (suc zero))| also hold. We already knew about the first of these, but
 the second is new:\begin{verbatim}
 -- on the third day, three properties are known
-P zero
-P (suc zero)
-P (suc (suc zero))
+P .zero
+P (.suc .zero)
+P (.suc (.suc .zero))
 \end{verbatim}
 You've got the hang of it by now:\begin{verbatim}
 -- on the fourth day, four properties are known
-P zero
-P (suc zero)
-P (suc (suc zero))
-P (suc (suc (suc zero)))
+P  .zero
+P (.suc .zero)
+P (.suc (.suc .zero))
+P (.suc (.suc (.suc .zero)))
 \end{verbatim}
 The process continues. On the \LeanVerb|n|-th day there will be \LeanVerb|n| distinct properties
 that hold. The property of every natural number will appear on some given day.
@@ -997,15 +997,18 @@ In particular, the property \LeanVerb|P n| first appears on day \LeanVerb|n + 1|
 \subsection{Our first proof: associativity}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----Our--first--proof-005F-005F-005F--associativity}
 
 \par
-\par\noindent To prove associativity, we take \LeanVerb|P m| to be the property:\LeanVerb|(m + n) + p \PLFAEquiv{} m + (n + p)|Here \LeanVerb|n| and \LeanVerb|p| are arbitrary natural numbers, so if we can show the equation
+\par\noindent To prove associativity, we take \LeanVerb|P m| to be the property:\begin{verbatim}
+plus (plus m n) p = plus m (plus n p)`
+\end{verbatim}
+Here \LeanVerb|n| and \LeanVerb|p| are arbitrary natural numbers, so if we can show the equation
 holds for all \LeanVerb|m| it will also hold for all \LeanVerb|n| and \LeanVerb|p|. The appropriate
 instances of the inference rules are:\begin{verbatim}
 -------------------------------
-(zero + n) + p = zero + (n + p)
+plus (plus .zero n) p = plus .zero (plus n p)
 
-(m + n) + p = m + (n + p)
+plus (plus m n) p = plus m (plus n p)
 ---------------------------------
-(suc m + n) + p = suc m + (n + p)
+(.suc (plus (plus m n) p) = .suc (plus m (plus n p))
 \end{verbatim}
 If we can demonstrate both of these, then associativity of addition follows by
 induction.Here is the proposition's statement and proof:\begin{LeanVerbatim}
@@ -1040,10 +1043,10 @@ all natural numbers \LeanVerb|m|, \LeanVerb|n|, and \LeanVerb|p| the equation \L
 holds. Evidence for the proposition is a function that accepts three natural
 numbers, binds them to \LeanVerb|m|, \LeanVerb|n|, and \LeanVerb|p|, and returns evidence for the
 corresponding instance of the equation.For the base case, we must show:\begin{verbatim}
-(zero + n) + p = zero + (n + p)
+plus (plus .zero n) p = plus .zero (plus n p)
 \end{verbatim}
 Simplifying both sides with the base case of addition yields the equation:\begin{verbatim}
-n + p = n + p
+plus n p = plus n p
 \end{verbatim}
 This holds trivially. Reading the chain of equations in the base case of the
 proof, the top and bottom of the chain match the two sides of the equation to
@@ -1108,7 +1111,7 @@ writes explicitly as \LeanVerb|\PLFAEquiv{}\PLFASymbol{⟨}\PLFASymbol{⟩}|.
 \par
 Another import property of addition is that it is \emph{commutative}, that is, that
 the the order of the operands does not matter:
-\LeanVerb|m + n = n + m|
+\LeanVerb|plus m n = plus n m|
 
 \par
 \par\noindent The proof requires that we first demonstrate two lemmas.
@@ -1122,10 +1125,10 @@ The base case of the definition of addition states that zero is a left identity.
 
 \par
 \par\noindent \begin{verbatim}
-.zero + n = n
+plus .zero n = n
 \end{verbatim}
 Our first lemma states that zero is also a right identity:\begin{verbatim}
-m + .zero = m
+plus m .zero = m
 \end{verbatim}
 Here is the lemma's statement and proof:\begin{LeanVerbatim}
 \textbf{theorem} plusIdentityRight : \PLFAForall{} (\textit{m} : \PLFANat{}),  \textit{m} + .zero = \textit{m} := \textbf{by}
@@ -1142,7 +1145,7 @@ Here is the lemma's statement and proof:\begin{LeanVerbatim}
         \textbf{calc}
             plus (\PLFANat{}.suc \textit{m}) \PLFANat{}.zero
           = .suc (plus \textit{m} .zero) := \textbf{by} \textbf{rfl}
-        _ = .suc \textit{m}              := \textbf{by} \textbf{exact} congrArg \PLFANat{}.suc \textit{ih}
+        _ = .suc \textit{m}             := \textbf{by} \textbf{exact} congrArg \PLFANat{}.suc \textit{ih}
 \end{LeanVerbatim}
 The signature states that we are defining the identifier \LeanVerb|plusIdentityRight|
 which provides evidence for the proposition:\begin{verbatim}
@@ -1150,7 +1153,32 @@ which provides evidence for the proposition:\begin{verbatim}
 \end{verbatim}
 evidence for the proposition is a function that accepts a natural number, binds
 it to \LeanVerb|m|, and returns evidence for the corresponding instance of the equation.
-The proof uses lean4's induction tactic on \LeanVerb|m|.For the base case, we must show:
+The proof uses lean4's induction tactic on \LeanVerb|m|.For the base case, we must show:\begin{verbatim}
+plus .zero .zero = .zero
+\end{verbatim}
+simplifying with the base case of addition, this is straightforward.For the inductive case, we must show:\begin{verbatim}
+plus (.suc m) .zero = .suc m
+\end{verbatim}
+Simplifying both sides with the inductive case of addition yields the equation:\begin{verbatim}
+.suc (.plus m zero) = .suc m
+\end{verbatim}
+This in turn follows by prefacing \LeanVerb|.suc| to both sides of the induction hypothesis:\begin{verbatim}
+plus m .zero = m
+\end{verbatim}
+Reading the chain of equations down from the top and up from the bottom takes us to
+the simplified equation above. The remaining equation has the justification:\begin{verbatim}
+exact congrArg \PLFANat{}.suc ih
+\end{verbatim}
+where \LeanVerb|exact| is a tactic that automatically closes the goal in the event that the
+shape of the equation that results from \LeanVerb|congrArg N.suc ih| is automatically dischargeable...
+\LeanVerb|congArg N.suc ih| has the effect of tacking the successor (\LeanVerb|.suc|) on both the
+left hand side and right hand side of the inductive hypothesis arg... here is the sig
+for \LeanVerb|congArg|:\begin{verbatim}
+\PLFAForall{} {α β : Sort} ->
+\PLFAForall{} {a1 a2 : α} ->
+\PLFAForall{} (f : α -> β) ->
+\PLFAForall{} (h : a1 = a2) -> f a1 = f a2
+\end{verbatim}
 
 \par
 
