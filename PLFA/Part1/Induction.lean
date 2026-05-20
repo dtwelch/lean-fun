@@ -321,9 +321,9 @@ theorem plusIdentityRight : ∀ (m : ℕ),  m + .zero = m := by
     --       ih : plus m ℕ.zero = m
     | suc m ih =>
         calc
-            plus (ℕ.suc m) ℕ.zero
-          = .suc (plus m .zero) := by rfl
-        _ = .suc m             := by exact congrArg ℕ.suc ih
+                plus (ℕ.suc m) ℕ.zero
+            =   .suc (plus m .zero) := by rfl
+          _ = .suc m                := by exact congrArg ℕ.suc ih
 ```
 The signature states that we are defining the identifier `plusIdentityRight`
 which provides evidence for the proposition:
@@ -333,14 +333,18 @@ which provides evidence for the proposition:
 evidence for the proposition is a function that accepts a natural number, binds
 it to `m`, and returns evidence for the corresponding instance of the equation.
 The proof uses lean4's induction tactic on `m`.
+:::
 
 For the base case, we must show:
+:::noindent
 ```
 plus .zero .zero = .zero
 ```
 simplifying with the base case of addition, this is straightforward.
+:::
 
 For the inductive case, we must show:
+:::noindent
 ```
 plus (.suc m) .zero = .suc m
 ```
@@ -361,11 +365,27 @@ where `exact` is a tactic that automatically closes the goal in the event that t
 shape of the equation that results from `congrArg N.suc ih` is automatically dischargeable...
 `congArg N.suc ih` has the effect of tacking the successor (`.suc`) on both the
 left hand side and right hand side of the inductive hypothesis arg... here is the sig
-for `congArg`:
+for congruence arg function `congArg`:
 ```
-∀ {α β : Sort} ->
-∀ {a1 a2 : α} ->
-∀ (f : α -> β) ->
-∀ (h : a1 = a2) -> f a1 = f a2
+congArg: ∀ {α β : Sort} ->
+         ∀ {a1 a2 : α} ->
+         ∀ (f : α -> β) ->
+         ∀ (h : a1 = a2) -> f a1 = f a2 := ...
 ```
 :::
+
+## The second lemma
+
+The inductive case of the definition of addition pushes `.suc` on the first
+argument to the outside:
+:::noindent
+```
+plus (.suc m) n = .suc (plus m n)
+```
+Our second lemma does the same for `.suc` on the second argument:
+```
+plus m (.suc n) = .suc (plus m n)
+```
+Here is the lemma's statement and proof:
+:::
+

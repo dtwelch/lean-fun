@@ -41,3 +41,11 @@ theorem plusIdentityRight : ∀ (m : ℕ),  m + .zero = m := by
                 plus (ℕ.suc m) ℕ.zero
             =   .suc (plus m .zero) := by rfl
         _   =   .suc m              := by exact congrArg ℕ.suc ih
+
+theorem plusSuc : ∀ (m n : ℕ), plus m (.suc n) = .suc (plus m n) := sorry
+
+/-
+def plus : ℕ -> ℕ -> ℕ
+    | .zero , n    => n
+    | (.suc m) , n => .suc (plus m n)
+-/
