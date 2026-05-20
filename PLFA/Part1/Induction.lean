@@ -51,9 +51,9 @@ We can test the proposition by choosing specific numbers for the three variables
 example : (3 + 4) + 5 = 3 + (4 + 5) := by
   calc
     (3 + 4) + 5 = 7 + 5 := by rfl
-    _ = 12 := by rfl
-    _ = 3 + 9 := by rfl
-    _ = 3 + (4 + 5) := by rfl
+    _ = 12              := by rfl
+    _ = 3 + 9           := by rfl
+    _ = 3 + (4 + 5)     := by rfl
 ```
 
 Here we have displayed the computation as a chain of equations, one term to a
@@ -192,18 +192,18 @@ theorem plus_assoc :
     | zero =>
         calc
             (.zero + n) + p = (n + p)   := by rfl
-            _ = .zero + (n + p)         := by rfl
+          _ = .zero + (n + p)           := by rfl
     | suc m ih =>
         -- ih : plus (plus m n) p = plus m (plus n p)
         -- ind. case goal:
         --  ⊢ plus (plus m.suc n) p = plus m.suc (plus n p)
         calc
             plus (plus (.suc m) n) p
-              = plus (.suc (plus m n)) p := by rfl
-            _ = .suc (plus m (plus n p)) := by
+            = plus (.suc (plus m n)) p := by rfl
+          _ = .suc (plus m (plus n p)) := by
               exact congrArg ℕ.suc (ih)
-            _ = .suc (plus m (plus n p)) := by rfl
-            _ = plus (.suc m) (plus n p) := by rfl
+          _ = .suc (plus m (plus n p)) := by rfl
+          _ = plus (.suc m) (plus n p) := by rfl
 ```
 Let's unpack this code. The signature states that we are defining a theorem,
 `plus_assoc`, which states a proposition:
@@ -315,15 +315,15 @@ theorem plusIdentityRight : ∀ (m : ℕ),  m + .zero = m := by
     -- goal: plus ℕ.zero ℕ.zero = ℕ.zero
     | zero =>
         calc
-                plus ℕ.zero ℕ.zero
-            =   ℕ.zero := by rfl
+            plus ℕ.zero ℕ.zero
+            = ℕ.zero            := by rfl
     -- goal: plus (ℕ.suc m) ℕ.zero = ℕ.suc m
     --       ih : plus m ℕ.zero = m
     | suc m ih =>
         calc
-                plus (ℕ.suc m) ℕ.zero
-            =   .suc (plus m .zero) := by rfl
-          _ = .suc m                := by exact congrArg ℕ.suc ih
+            plus (ℕ.suc m) ℕ.zero
+            = .suc (plus m .zero) := by rfl
+          _ = .suc m              := by exact congrArg ℕ.suc ih
 ```
 The signature states that we are defining the identifier `plusIdentityRight`
 which provides evidence for the proposition:
