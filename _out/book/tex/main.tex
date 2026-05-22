@@ -1403,4 +1403,56 @@ plus (plus (plus m n) p) q  =  plus (plus m (plus n p)) q
 
 \par
 
+\subsubsection{Creation, one last time}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----Second--proof-005F-005F-005F--commutativity----Creation-005F-005F-005F--one--last--time}
+
+\par
+Returning to the proof of associativity, it may be helpful to view the
+inductive proof (or, equivalently, the recursive definition) as a creation
+story. This time we are concerned with judgments asserting associativity:
+
+\par
+\par\noindent \begin{verbatim}
+-- in the beginning, we know nothing about associativity
+\end{verbatim}
+Now, we apply the rules to all the judgments we know about. The base case tells us that (zero + n) + p \PLFAEquiv{} zero + (n + p) for every natural n and p. The inductive case tells us that if (m + n) + p \PLFAEquiv{} m + (n + p) (on the day before today) then (suc m + n) + p \PLFAEquiv{} suc m + (n + p) (today). We didn’t know any judgments about associativity before today, so that rule doesn’t give us any new judgments:\begin{verbatim}
+-- on the first day, we know about associativity of 0
+plus (plus 0 0) 0 = plus 0 (plus 0 0) ... plus (plus 0 4) 5 = plus 0 (plus 4 5)
+\end{verbatim}
+Then we repeat the process, so on the next day we know about all the judgments
+from the day before, plus any judgments added by the rules. The base case tells
+us nothing new, but now the inductive case adds more judgments:\begin{verbatim}
+-- on the second day, we know about associativity of 0 and 1
+plus (plus 0 0) 0 = plus 0 (plus 0 0) ... plus (plus 0 4) 5 = plus 0 (plus 4 5)
+plus (plus 1 0) 0 = plus 1 (plus 0 0) ... plus (plus 1 4) 5 = plus 1 (plus 4 5)   ...
+\end{verbatim}
+And we repeat the process again:\begin{verbatim}
+-- on the third day, we know about associativity of 0, 1, and 2
+plus (plus 0 0) 0 = plus 0 (plus 0 0) ... plus (plus 0 4) 5 = plus 0 (plus 4 5)
+plus (plus 1 0) 0 = plus 1 (plus 0 0) ... plus (plus 1 4) 5 = plus 1 (plus 4 5)   ...
+plus (plus 2 0) 0 = plus 2 (plus 0 0) ... plus (plus 2 4) 5 = plus 2 (plus 4 5)   ...
+\end{verbatim}
+You've got the hang of it by now:\begin{verbatim}
+-- On the fourth day, we know about associativity of 0, 1, 2, and 3.
+plus (plus 0 0) 0 = plus 0 (plus 0 0) ... plus (plus 0 4) 5 = plus 0 (plus 4 5)
+plus (plus 1 0) 0 = plus 1 (plus 0 0) ... plus (plus 1 4) 5 = plus 1 (plus 4 5)   ...
+plus (plus 2 0) 0 = plus 2 (plus 0 0) ... plus (plus 2 4) 5 = plus 2 (plus 4 5)   ...
+plus (plus 3 0) 0 = plus 3 (plus 0 0) ... plus (plus 3 4) 5 = plus 3 (plus 4 5)   ...
+\end{verbatim}
+The process continues. On the m'th day we will know all the judgments where the
+first number is less than m.There is also a completely finite approach to generating the same equations,
+which is left as an exercise for the reader.
+
+\par
+
+\subsubsection{Exercise \texttt{plusSwap} (recommended)}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----Second--proof-005F-005F-005F--commutativity----Exercise----plusSwap-----005FLPAR-005Frecommended-005FRPAR-005F}
+
+\par
+\par\noindent Show that\begin{verbatim}
+plus m (plus n p) = plus n (plus m p)
+\end{verbatim}
+for all naturals \LeanVerb|m|, \LeanVerb|n|, and \LeanVerb|p|. No induction is needed, just apply the
+previous results which show addition is associative and commutative.\textbf{potential sol.}todo
+
+\par
+
 \end{document}
