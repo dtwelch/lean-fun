@@ -895,9 +895,9 @@ Here \LeanVerb|m|, \LeanVerb|n|, and \LeanVerb|p| are variables that range over 
 example : (3 + 4) + 5 = 3 + (4 + 5) := by
   calc
     (3 + 4) + 5 = 7 + 5 := by rfl
-    _ = 12 := by rfl
-    _ = 3 + 9 := by rfl
-    _ = 3 + (4 + 5) := by rfl
+    _ = 12              := by rfl
+    _ = 3 + 9           := by rfl
+    _ = 3 + (4 + 5)     := by rfl
 \end{verbatim}
 Here we have displayed the computation as a chain of equations, one term to a
 line. It is often easiest to read such chains from the top down until one
@@ -1021,18 +1021,18 @@ induction.Here is the proposition's statement and proof:\begin{LeanVerbatim}
     \symbol{124} zero =>
         \textbf{calc}
             (.zero + \textit{n}) + \textit{p} = (\textit{n} + \textit{p})   := \textbf{by} \textbf{rfl}
-            _ = .zero + (\textit{n} + \textit{p})         := \textbf{by} \textbf{rfl}
+          _ = .zero + (\textit{n} + \textit{p})           := \textbf{by} \textbf{rfl}
     \symbol{124} suc \textit{m} \textit{ih} =>
         \PLFAComment{-- ih : plus (plus m n) p = plus m (plus n p)}
         \PLFAComment{-- ind. case goal:}
         \PLFAComment{--  \PLFATurnstile{} plus (plus m.suc n) p = plus m.suc (plus n p)}
         \textbf{calc}
             plus (plus (.suc \textit{m}) \textit{n}) \textit{p}
-              = plus (.suc (plus \textit{m} \textit{n})) \textit{p} := \textbf{by} \textbf{rfl}
-            _ = .suc (plus \textit{m} (plus \textit{n} \textit{p})) := \textbf{by}
+            = plus (.suc (plus \textit{m} \textit{n})) \textit{p} := \textbf{by} \textbf{rfl}
+          _ = .suc (plus \textit{m} (plus \textit{n} \textit{p})) := \textbf{by}
               \textbf{exact} congrArg \PLFANat{}.suc (\textit{ih})
-            _ = .suc (plus \textit{m} (plus \textit{n} \textit{p})) := \textbf{by} \textbf{rfl}
-            _ = plus (.suc \textit{m}) (plus \textit{n} \textit{p}) := \textbf{by} \textbf{rfl}
+          _ = .suc (plus \textit{m} (plus \textit{n} \textit{p})) := \textbf{by} \textbf{rfl}
+          _ = plus (.suc \textit{m}) (plus \textit{n} \textit{p}) := \textbf{by} \textbf{rfl}
 \end{LeanVerbatim}
 Let's unpack this code. The signature states that we are defining a theorem,
 \LeanVerb|plus_assoc|, which states a proposition:\begin{verbatim}
@@ -1137,15 +1137,15 @@ Here is the lemma's statement and proof:\begin{LeanVerbatim}
     \PLFAComment{-- goal: plus \PLFANat{}.zero \PLFANat{}.zero = \PLFANat{}.zero}
     \symbol{124} zero =>
         \textbf{calc}
-                plus \PLFANat{}.zero \PLFANat{}.zero
-            =   \PLFANat{}.zero := \textbf{by} \textbf{rfl}
+            plus \PLFANat{}.zero \PLFANat{}.zero
+            = \PLFANat{}.zero            := \textbf{by} \textbf{rfl}
     \PLFAComment{-- goal: plus (\PLFANat{}.suc m) \PLFANat{}.zero = \PLFANat{}.suc m}
     \PLFAComment{--       ih : plus m \PLFANat{}.zero = m}
     \symbol{124} suc \textit{m} \textit{ih} =>
         \textbf{calc}
-                plus (\PLFANat{}.suc \textit{m}) \PLFANat{}.zero
-            =   .suc (plus \textit{m} .zero) := \textbf{by} \textbf{rfl}
-          _ = .suc \textit{m}                := \textbf{by} \textbf{exact} congrArg \PLFANat{}.suc \textit{ih}
+            plus (\PLFANat{}.suc \textit{m}) \PLFANat{}.zero
+            = .suc (plus \textit{m} .zero) := \textbf{by} \textbf{rfl}
+          _ = .suc \textit{m}              := \textbf{by} \textbf{exact} congrArg \PLFANat{}.suc \textit{ih}
 \end{LeanVerbatim}
 The signature states that we are defining the identifier \LeanVerb|plusIdentityRight|
 which provides evidence for the proposition:\begin{verbatim}
@@ -1207,7 +1207,199 @@ plus (.suc m) n = .suc (plus m n)
 Our second lemma does the same for \LeanVerb|.suc| on the second argument:\begin{verbatim}
 plus m (.suc n) = .suc (plus m n)
 \end{verbatim}
-Here is the lemma's statement and proof:
+Here is the lemma's statement and proof:\begin{LeanVerbatim}
+\textbf{theorem} plusSuc : \PLFAForall{} (\textit{m} \textit{n} : \PLFANat{}), plus \textit{m} (.suc \textit{n}) = .suc (plus \textit{m} \textit{n}) := \textbf{by}
+    \textbf{intro} \textit{m} \textit{n}
+    \textbf{induction} \textit{m} \textbf{with}
+    \PLFAComment{-- goal: plus \PLFANat{}.zero (\PLFANat{}.suc n) = \PLFANat{}.suc (plus \PLFANat{}.zero n)}
+    \symbol{124} zero =>
+        \textbf{calc}
+            plus \PLFANat{}.zero (\PLFANat{}.suc \textit{n})
+            = .suc \textit{n}                  := \textbf{by} \textbf{rfl}
+          _ = .suc (plus .zero \textit{n})     := \textbf{by} \textbf{rfl} \PLFAComment{-- rewrite using first defining eq of plus}
+    \PLFAComment{-- goal: plus (\PLFANat{}.suc m) (\PLFANat{}.suc n) = \PLFANat{}.suc (plus (\PLFANat{}.suc m) n)}
+    \PLFAComment{-- ih  : plus m (\PLFANat{}.suc n) = \PLFANat{}.suc (plus m n)}
+    \symbol{124} suc \textit{m} \textit{ih} =>
+        \textbf{calc}
+            plus (.suc \textit{m}) (.suc \textit{n})
+            = .suc (plus \textit{m} (.suc \textit{n})) := \textbf{by}
+                \textbf{rfl}
+          _ = \PLFANat{}.suc (\PLFANat{}.suc (plus \textit{m} \textit{n})) := \textbf{by}
+                \PLFAComment{-- useful trick w/ hover on h for}
+                \PLFAComment{-- examining type shape ("what if"?)}
+                \textbf{have} \textit{h} := congrArg \PLFANat{}.suc \textit{ih}
+                \textbf{exact} \textit{h}
+          _ = \PLFANat{}.suc (plus (.suc \textit{m}) \textit{n}) := \textbf{by}
+                \textbf{rfl}
+\end{LeanVerbatim}
+The signature states that we are defining the theorem \LeanVerb|plusSuc|, which provides
+evidence for the proposition:\begin{verbatim}
+\PLFAForall{} (m n : \PLFANat{}), plus m (.suc n) = .suc (plus m n)
+\end{verbatim}
+Evidence for this proposition is a function that accepts two natural numbers,
+binds them to m and n, and returns evidence for the corresponding instance of
+the equation.
+
+\par
+\par\noindent The proof is by induction on m. For the base case, we must show:\begin{verbatim}
+plus .zero (.suc n) = .suc (plus .zero n)
+\end{verbatim}
+Simplifying both sides with the base case of addition, this is straightforward:\begin{verbatim}
+| zero =>
+    calc
+        plus \PLFANat{}.zero (\PLFANat{}.suc n)
+        = .suc n              := by rfl
+      _ = .suc (plus .zero n) := by rfl
+\end{verbatim}
+
+\par
+\par\noindent For the inductive case, we must show:\begin{verbatim}
+plus (.suc m) (.suc n) = .suc (plus (.suc m) n)
+\end{verbatim}
+Simplifying the left-hand side with the inductive case of addition gives:\begin{verbatim}
+.suc (plus m (.suc n))
+\end{verbatim}
+Simplifying the desired right-hand side also exposes:\begin{verbatim}
+.suc (.suc (plus m n))
+\end{verbatim}
+So the proof passes through the middle expression:\begin{verbatim}
+.suc (.suc (plus m n))
+\end{verbatim}
+The induction hypothesis is:\begin{verbatim}
+ih : plus m (.suc n) = .suc (plus m n)
+\end{verbatim}
+Prefacing \LeanVerb|.suc| to both sides of the induction hypothesis gives:\begin{verbatim}
+congrArg \PLFANat{}.suc ih :
+  \PLFANat{}.suc (plus m (.suc n)) = \PLFANat{}.suc (\PLFANat{}.suc (plus m n))
+\end{verbatim}
+This is the central step of the calculation. Reading the chain from the
+top down and from the bottom up takes us to the simplified equation in the
+middle:\begin{verbatim}
+| suc m ih =>
+    calc
+        plus (.suc m) (.suc n)
+        = .suc (plus m (.suc n)) := by rfl
+      _ = \PLFANat{}.suc (\PLFANat{}.suc (plus m n)) := by
+            exact congrArg \PLFANat{}.suc ih
+      _ = \PLFANat{}.suc (plus (.suc m) n) := by rfl
+\end{verbatim}
+Here, \LeanVerb|ih| is the induction hypothesis, and \LeanVerb|congrArg \PLFANat{}.suc ih| is the Lean
+analogue of applying congruence with suc: it places \LeanVerb|\PLFANat{}.suc| around both sides
+of the equality supplied by \LeanVerb|ih|.
+
+\par
+The first and last steps are justified by \LeanVerb|rfl|, because both are definitional
+equalities following from the recursive definition of \LeanVerb|plus|.
+
+\par
+
+\subsubsection{The proposition}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----Second--proof-005F-005F-005F--commutativity----The--proposition}
+
+\par
+\par\noindent Finally, here is our proposition's statement and proof:\begin{LeanVerbatim}
+\textbf{theorem} plusComm : \PLFAForall{} (\textit{m} \textit{n} : \PLFANat{}), \textit{m} + \textit{n} = \textit{n} + \textit{m} := \textbf{by}
+    \textbf{intro} \textit{m} \textit{n}
+    \textbf{induction} \textit{n} \textbf{with}
+    \PLFAComment{-- goal: plus m \PLFANat{}.zero = plus \PLFANat{}.zero m}
+    \symbol{124} zero =>
+        \textbf{calc}
+            plus \textit{m} .zero
+          = \textit{m}            := \textbf{by} \textbf{exact} (plusIdentityRight \textit{m})
+        _ = plus .zero \textit{m} := \textbf{by} \textbf{rfl}
+    \symbol{124} suc \textit{n} \textit{ih} =>
+        \PLFAComment{-- plus m (\PLFANat{}.suc n) = plus (\PLFANat{}.suc n) m}
+        \PLFAComment{-- ih : plus m n = plus n m}
+        \textbf{calc}
+            plus \textit{m} (\PLFANat{}.suc \textit{n})
+          = .suc (plus \textit{m} \textit{n}) := \textbf{by} \textbf{exact} plusSuc \textit{m} \textit{n}
+        _ = .suc (plus \textit{n} \textit{m}) := \textbf{by}
+            \PLFAComment{-- h : \PLFANat{}.suc (plus m n) = \PLFANat{}.suc (plus n m)}
+            \textbf{have} \textit{h} := congrArg \PLFANat{}.suc \textit{ih}
+            \textbf{exact} \textit{h}
+        _ = plus (.suc \textit{n}) \textit{m} := \textbf{by} \textbf{rfl}
+\end{LeanVerbatim}
+The first line states that we are defining the identifier \LeanVerb|plusComm| which
+provides evidence for the proposition:\begin{verbatim}
+\PLFAForall{} (m n : \PLFANat{}), plus m n = plus n m
+\end{verbatim}
+Evidence for the proposition is a function that accepts two natural numbers,
+binds them to \LeanVerb|m| and \LeanVerb|n|, and returns evidence for the corresponding instance
+of the equation. The proof is by \LeanVerb|induction| on \LeanVerb|n|. (Not on \LeanVerb|m| this time!)
+
+\par
+For the base case, we must show:
+
+\par
+\par\noindent \begin{verbatim}
+plus m zero = plus zero m
+\end{verbatim}
+Simplifying both sides with the base case of addition yields the equation:\begin{verbatim}
+plus m .zero = m
+\end{verbatim}
+The remaining equation has the justification \LeanVerb|(plusIdentityRight m)|, which
+invokes the first lemma.For the inductive case, we must show:\begin{verbatim}
+plus m (.suc n) = plus (.suc n) m
+\end{verbatim}
+Simplifying both sides with the inductive case of addition yields the equation:\begin{verbatim}
+plus m (.suc n) = .suc (plus n m)
+\end{verbatim}
+We show this in two steps. First, we have:\begin{verbatim}
+plus m (.suc n) = .suc (plus m n)
+\end{verbatim}
+which is justified by the second lemma, \LeanVerb|(plusSuc m n)|. Then we have\begin{verbatim}
+.suc (plus m n) = .suc (plus n m)
+\end{verbatim}
+which is justified by congruence and the induction hypothesis,
+\LeanVerb|congrArg \PLFANat{}.suc ih|. This completes the proof.
+Lean4 requires that identifiers are defined before they are used, so we must
+present the lemmas before the main proposition, as we have done above.
+In practice, one will often attempt to prove the main proposition first, and
+the equations required to do so will suggest what lemmas to prove.
+
+\par
+
+\subsubsection{Our first corollary: rearranging}\label{PLFA--in--Lean----Part--1----Induction-005F-005F-005F--Proof--by--Induction----Second--proof-005F-005F-005F--commutativity----Our--first--corollary-005F-005F-005F--rearranging}
+
+\par
+We can apply associativity to rearrange parentheses however we like. Here is an
+example:
+
+\par
+\begin{verbatim}
+theorem plusRearrange : \PLFAForall{} (m n p q : \PLFANat{}),
+    plus (plus m n) (plus p q) = plus (plus m (plus n p)) q := by
+    intro m n p q
+    calc
+        plus (plus m n) (plus p q)
+        = plus (plus (plus m n) p) q := by
+          symm
+          have h := plusAssoc (plus m n) p q
+          exact h
+      _ = plus (plus m (plus n p)) q := by
+          have h  := plusAssoc m n p
+          -- tacks a plus σ q onto the rhs of whatever shape σ is
+          have h' := congrArg (\PLFASymbol{λ} σ => plus σ q) h
+          exact h'
+\end{verbatim}
+
+\par
+\par\noindent No induction is required, we simply apply associativity twice.
+A few points are worthy of note.First, addition associates to the left, so m + (n + p) + q stands for (m + (n + p)) + q.
+Second, we use sym to interchange the sides of an equation. Proposition +-assoc (m + n) p q shifts parentheses from left to right:\begin{verbatim}
+plus ((plus m n) p) q = plus (plus m n) (plus p q)
+\end{verbatim}
+To shift them the other way, we use sym (\LeanVerb|plusAssoc (plus m n) p q|):\begin{verbatim}
+(m + n) + (p + q) \PLFAEquiv{} ((m + n) + p) + q
+\end{verbatim}
+In general, if \LeanVerb|e| provides evidence for \LeanVerb|x = y| then \LeanVerb|symm| tactic
+(which must be invoked on its own line in a \LeanVerb|by| block) provides evidence for
+\LeanVerb|y = x|.Third, Lean4 allows us to "tack" a term onto the rhs of both sides of an
+equality by writing \LeanVerb|congrArg (\PLFASymbol{λ} σ => plus σ q) h|.. so this:\begin{verbatim}
+plus (plus m n) p  =  plus m (plus n p)
+\end{verbatim}
+can be rewritten into the equation:\begin{verbatim}
+plus (plus (plus m n) p) q  =  plus (plus m (plus n p)) q
+\end{verbatim}
 
 \par
 

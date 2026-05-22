@@ -32,7 +32,7 @@ def parseMove : Char -> (Except String Move) :=
     λ ch =>
         match ch with
         | '^' => Except.ok .up
-        | 'v'  => Except.ok .down
+        | 'v' => Except.ok .down
         | '>' => Except.ok .right
         | '<' => Except.ok .left
         | e   => Except.error ("unexpected: " ++ String.singleton e)

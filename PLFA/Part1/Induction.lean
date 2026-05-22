@@ -387,5 +387,222 @@ Our second lemma does the same for `.suc` on the second argument:
 plus m (.suc n) = .suc (plus m n)
 ```
 Here is the lemma's statement and proof:
+```lean
+theorem plusSuc : ∀ (m n : ℕ), plus m (.suc n) = .suc (plus m n) := by
+    intro m n
+    induction m with
+    -- goal: plus ℕ.zero (ℕ.suc n) = ℕ.suc (plus ℕ.zero n)
+    | zero =>
+        calc
+            plus ℕ.zero (ℕ.suc n)
+            = .suc n                  := by rfl
+          _ = .suc (plus .zero n)     := by rfl -- rewrite using first defining eq of plus
+    -- goal: plus (ℕ.suc m) (ℕ.suc n) = ℕ.suc (plus (ℕ.suc m) n)
+    -- ih  : plus m (ℕ.suc n) = ℕ.suc (plus m n)
+    | suc m ih =>
+        calc
+            plus (.suc m) (.suc n)
+            = .suc (plus m (.suc n)) := by
+                rfl
+          _ = ℕ.suc (ℕ.suc (plus m n)) := by
+                -- useful trick w/ hover on h for
+                -- examining type shape ("what if"?)
+                have h := congrArg ℕ.suc ih
+                exact h
+          _ = ℕ.suc (plus (.suc m) n) := by
+                rfl
+```
+The signature states that we are defining the theorem `plusSuc`, which provides
+evidence for the proposition:
+```
+∀ (m n : ℕ), plus m (.suc n) = .suc (plus m n)
+```
+Evidence for this proposition is a function that accepts two natural numbers,
+binds them to m and n, and returns evidence for the corresponding instance of
+the equation.
 :::
 
+:::noindent
+The proof is by induction on m. For the base case, we must show:
+```
+plus .zero (.suc n) = .suc (plus .zero n)
+```
+Simplifying both sides with the base case of addition, this is straightforward:
+```
+| zero =>
+    calc
+        plus ℕ.zero (ℕ.suc n)
+        = .suc n              := by rfl
+      _ = .suc (plus .zero n) := by rfl
+```
+:::
+
+:::noindent
+For the inductive case, we must show:
+```
+plus (.suc m) (.suc n) = .suc (plus (.suc m) n)
+```
+Simplifying the left-hand side with the inductive case of addition gives:
+```
+.suc (plus m (.suc n))
+```
+Simplifying the desired right-hand side also exposes:
+```
+.suc (.suc (plus m n))
+```
+So the proof passes through the middle expression:
+```
+.suc (.suc (plus m n))
+```
+The induction hypothesis is:
+```
+ih : plus m (.suc n) = .suc (plus m n)
+```
+Prefacing `.suc` to both sides of the induction hypothesis gives:
+```
+congrArg ℕ.suc ih :
+  ℕ.suc (plus m (.suc n)) = ℕ.suc (ℕ.suc (plus m n))
+```
+This is the central step of the calculation. Reading the chain from the
+top down and from the bottom up takes us to the simplified equation in the
+middle:
+
+```
+| suc m ih =>
+    calc
+        plus (.suc m) (.suc n)
+        = .suc (plus m (.suc n)) := by rfl
+      _ = ℕ.suc (ℕ.suc (plus m n)) := by
+            exact congrArg ℕ.suc ih
+      _ = ℕ.suc (plus (.suc m) n) := by rfl
+```
+Here, `ih` is the induction hypothesis, and `congrArg ℕ.suc ih` is the Lean
+analogue of applying congruence with suc: it places `ℕ.suc` around both sides
+of the equality supplied by `ih`.
+:::
+
+The first and last steps are justified by `rfl`, because both are definitional
+equalities following from the recursive definition of `plus`.
+
+## The proposition
+:::noindent
+Finally, here is our proposition's statement and proof:
+```lean
+theorem plusComm : ∀ (m n : ℕ), m + n = n + m := by
+    intro m n
+    induction n with
+    -- goal: plus m ℕ.zero = plus ℕ.zero m
+    | zero =>
+        calc
+            plus m .zero
+          = m            := by exact (plusIdentityRight m)
+        _ = plus .zero m := by rfl
+    | suc n ih =>
+        -- plus m (ℕ.suc n) = plus (ℕ.suc n) m
+        -- ih : plus m n = plus n m
+        calc
+            plus m (ℕ.suc n)
+          = .suc (plus m n) := by exact plusSuc m n
+        _ = .suc (plus n m) := by
+            -- h : ℕ.suc (plus m n) = ℕ.suc (plus n m)
+            have h := congrArg ℕ.suc ih
+            exact h
+        _ = plus (.suc n) m := by rfl
+```
+
+The first line states that we are defining the identifier `plusComm` which
+provides evidence for the proposition:
+```
+∀ (m n : ℕ), plus m n = plus n m
+```
+
+Evidence for the proposition is a function that accepts two natural numbers,
+binds them to `m` and `n`, and returns evidence for the corresponding instance
+of the equation. The proof is by `induction` on `n`. (Not on `m` this time!)
+:::
+For the base case, we must show:
+:::noindent
+```
+plus m zero = plus zero m
+```
+Simplifying both sides with the base case of addition yields the equation:
+
+```
+plus m .zero = m
+```
+The remaining equation has the justification `(plusIdentityRight m)`, which
+invokes the first lemma.
+
+For the inductive case, we must show:
+
+```
+plus m (.suc n) = plus (.suc n) m
+```
+Simplifying both sides with the inductive case of addition yields the equation:
+```
+plus m (.suc n) = .suc (plus n m)
+```
+We show this in two steps. First, we have:
+```
+plus m (.suc n) = .suc (plus m n)
+```
+which is justified by the second lemma, `(plusSuc m n)`. Then we have
+```
+.suc (plus m n) = .suc (plus n m)
+```
+which is justified by congruence and the induction hypothesis,
+`congrArg ℕ.suc ih`. This completes the proof.
+Lean4 requires that identifiers are defined before they are used, so we must
+present the lemmas before the main proposition, as we have done above.
+In practice, one will often attempt to prove the main proposition first, and
+the equations required to do so will suggest what lemmas to prove.
+:::
+
+## Our first corollary: rearranging
+
+We can apply associativity to rearrange parentheses however we like. Here is an
+example:
+```
+theorem plusRearrange : ∀ (m n p q : ℕ),
+    plus (plus m n) (plus p q) = plus (plus m (plus n p)) q := by
+    intro m n p q
+    calc
+        plus (plus m n) (plus p q)
+        = plus (plus (plus m n) p) q := by
+          symm
+          have h := plusAssoc (plus m n) p q
+          exact h
+      _ = plus (plus m (plus n p)) q := by
+          have h  := plusAssoc m n p
+          -- tacks a plus σ q onto the rhs of whatever shape σ is
+          have h' := congrArg (λ σ => plus σ q) h
+          exact h'
+```
+
+:::noindent
+No induction is required, we simply apply associativity twice.
+A few points are worthy of note.
+
+First, addition associates to the left, so m + (n + p) + q stands for (m + (n + p)) + q.
+Second, we use sym to interchange the sides of an equation. Proposition +-assoc (m + n) p q shifts parentheses from left to right:
+```
+plus ((plus m n) p) q = plus (plus m n) (plus p q)
+```
+To shift them the other way, we use sym (`plusAssoc (plus m n) p q`):
+```
+(m + n) + (p + q) ≡ ((m + n) + p) + q
+```
+In general, if `e` provides evidence for `x = y` then `symm` tactic
+(which must be invoked on its own line in a `by` block) provides evidence for
+`y = x`.
+
+Third, Lean4 allows us to "tack" a term onto the rhs of both sides of an
+equality by writing `congrArg (λ σ => plus σ q) h`.. so this:
+```
+plus (plus m n) p  =  plus m (plus n p)
+```
+can be rewritten into the equation:
+```
+plus (plus (plus m n) p) q  =  plus (plus m (plus n p)) q
+```
+:::
