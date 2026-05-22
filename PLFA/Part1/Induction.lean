@@ -663,7 +663,9 @@ plus m (plus n p) = plus n (plus m p)
 ```
 for all naturals `m`, `n`, and `p`. No induction is needed, just apply the
 previous results which show addition is associative and commutative.
+:::
 
+:::noindent
 *potential sol.*
 
 todo
