@@ -2,7 +2,9 @@ import Lake
 open Lake DSL
 
 package plfa where
-
+        leanOptions := #[
+            ⟨`pp.fieldNotation, false ⟩
+        ]
 require verso from git
   "https://github.com/leanprover/verso.git" @ "v4.29.0"
 

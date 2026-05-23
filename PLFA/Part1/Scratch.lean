@@ -99,6 +99,8 @@ theorem plusRearrange : ∀ (m n p q : ℕ),
           have h' := congrArg (λ σ => plus σ q) h
           exact h'
 
+theorem timesAssoc : ∀ (m n p : ℕ)
+
 /-
 theorem plusAssoc : ∀ (m n p : ℕ), plus (plus m n) p = plus m (plus n p)
 
