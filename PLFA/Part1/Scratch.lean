@@ -1,8 +1,6 @@
 import PLFA.Part1.Naturals
 
 -- makes it so it doesn't do m.suc but rather .suc m (it's not a field..)
-set_option pp.fieldNotation false
-
 theorem plusAssoc : ∀ (m n p : ℕ), plus (plus m n) p = plus m (plus n p) := by
     intro m n p
     induction m with
@@ -99,9 +97,29 @@ theorem plusRearrange : ∀ (m n p q : ℕ),
           have h' := congrArg (λ σ => plus σ q) h
           exact h'
 
-theorem timesAssoc : ∀ (m n p : ℕ)
+theorem timesAssoc : ∀ (m n p : ℕ), mult (mult m n) p = mult m (mult n p) := by
+    intro m n p
+    induction m with
+    | zero =>
+        -- goal: mult (mult ℕ.zero n) p = mult ℕ.zero (mult n p)
+        calc
+            mult (mult .zero n) p
+            = mult .zero p          := by rfl
+          _ = .zero                 := by rfl
+          _ = mult .zero (mult n p) := by rfl
+    | suc m ih =>
+        -- goal : mult (mult (ℕ.suc m) n) p = mult (ℕ.suc m) (mult n p)
+        -- ih   : mult (mult m n) p = mult m (mult n p)
+        calc
+            mult (mult (.suc m) n) p
+            =  mult (plus n (mult m n)) p := rfl
+          _ = sorry
 
 /-
+def mult : ℕ -> ℕ -> ℕ
+    | .zero, n      => .zero
+    | (.suc m), n   => n + (mult m n)
+
 theorem plusAssoc : ∀ (m n p : ℕ), plus (plus m n) p = plus m (plus n p)
 
 def plus : ℕ -> ℕ -> ℕ
