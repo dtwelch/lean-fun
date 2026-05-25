@@ -1454,7 +1454,33 @@ for all naturals \LeanVerb|m|, \LeanVerb|n|, and \LeanVerb|p|. No induction is n
 previous results which show addition is associative and commutative.
 
 \par
-\par\noindent \textbf{potential sol.}todo
+\par\noindent \textbf{potential sol.}\begin{LeanVerbatim}
+\textbf{theorem} plusSwap : \PLFAForall{} (\textit{m} \textit{n} \textit{p}), plus \textit{m} (plus \textit{n} \textit{p}) = plus \textit{n} (plus \textit{m} \textit{p}) := \textbf{by}
+    \textbf{intro} \textit{m} \textit{n} \textit{p}
+    \textbf{induction} \textit{m} \textbf{with}
+    \symbol{124} zero =>
+      \PLFAComment{-- goal: plus .zero (plus n p) = plus n (plus \PLFANat{}.zero p)}
+      \textbf{calc}
+        plus .zero (plus \textit{n} \textit{p})
+        = plus \textit{n} \textit{p}              := \textbf{by} \textbf{rfl}
+      _ = plus \textit{n} (plus .zero \textit{p}) := \textbf{by} \textbf{rfl}
+    \symbol{124} suc \textit{m} \textit{ih} =>
+        \PLFAComment{-- goal : plus (.suc m) (plus n p) = plus n (plus (.suc m) p)}
+        \PLFAComment{-- ih   : plus m (plus n p) = plus n (plus m p)}
+        \textbf{calc}
+            plus (.suc \textit{m}) (plus \textit{n} \textit{p})
+            = .suc (plus \textit{m} (plus \textit{n} \textit{p})) := \textbf{by} \textbf{rfl}
+          _ = .suc (plus \textit{n} (plus \textit{m} \textit{p})) := \textbf{by}
+            \textbf{have} \textit{h1} := (congrArg \PLFANat{}.suc \textit{ih})
+            \textbf{exact} \textit{h1}
+          _ = plus \textit{n} (.suc (plus \textit{m} \textit{p})) := \textbf{by}
+            \textbf{have} \textit{h1} := plusSuc \textit{n} (plus \textit{m} \textit{p})
+            \textbf{symm}
+            \textbf{exact} \textit{h1}
+          _ = plus \textit{n} (.suc (plus \textit{m} \textit{p})) := \textbf{by} \textbf{rfl}
+          \PLFAComment{-- by 2nd def eq in plus:}
+          _ = plus \textit{n} (plus (.suc \textit{m}) \textit{p}) := \textbf{by} \textbf{rfl}
+\end{LeanVerbatim}
 
 \par
 

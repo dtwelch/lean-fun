@@ -183,7 +183,7 @@ induction.
 Here is the proposition's statement and proof:
 
 ```lean
-theorem plus_assoc :
+theorem plusAssoc :
   ∀ (m n p : ℕ), (m + n) + p = m + (n + p) := by
     intro m n p
     induction m with
@@ -667,6 +667,77 @@ previous results which show addition is associative and commutative.
 
 :::noindent
 *potential sol.*
+```lean
+theorem plusSwap : ∀ (m n p), plus m (plus n p) = plus n (plus m p) := by
+    intro m n p
+    induction m with
+    | zero =>
+      -- goal: plus .zero (plus n p) = plus n (plus ℕ.zero p)
+      calc
+        plus .zero (plus n p)
+        = plus n p              := by rfl
+      _ = plus n (plus .zero p) := by rfl
+    | suc m ih =>
+        -- goal : plus (.suc m) (plus n p) = plus n (plus (.suc m) p)
+        -- ih   : plus m (plus n p) = plus n (plus m p)
+        calc
+            plus (.suc m) (plus n p)
+            = .suc (plus m (plus n p)) := by rfl
+          _ = .suc (plus n (plus m p)) := by
+            have h1 := (congrArg ℕ.suc ih)
+            exact h1
+          _ = plus n (.suc (plus m p)) := by
+            have h1 := plusSuc n (plus m p)
+            symm
+            exact h1
+          _ = plus n (.suc (plus m p)) := by rfl
+          -- by 2nd def eq in plus:
+          _ = plus n (plus (.suc m) p) := by rfl
+```
+:::
 
-todo
+## Exercise `timesDistOverPlus` (recommended)
+:::noindent
+Show multiplication distributes over addition, that is,
+```
+mult (plus m n) p = plus (mult m p) (mult n p)
+```
+for all naturals `m`, `n`, and `p`.
+:::
+
+:::noindent
+*potential sol:*
+```lean
+theorem multDistOverPlus :
+        ∀ (m n p), mult (plus m n) p = plus (mult m p) (mult n p) := by
+    intro m n p
+    induction m with
+    | zero      =>
+      -- goal: mult (plus ℕ.zero n) p = plus (mult ℕ.zero p) (mult n p)
+      calc
+            mult (plus .zero n) p   =
+            plus .zero (mult n p)           := by rfl
+        _ = (mult n p)                      := by rfl
+        _ = plus .zero (mult n p)           := by rfl
+        _ = plus (mult .zero p) (mult n p)  := by rfl
+    | suc m ih  =>
+      -- goal : mult (plus (ℕ.suc m) n) p = plus (mult (ℕ.suc m) p) (mult n p)
+      -- ih   : mult (plus m n) p = plus (mult m p) (mult n p)
+      calc
+            mult (plus (.suc m) n) p =
+            mult (.suc (plus m n)) p    := by rfl
+        _ = plus p (mult (plus m n) p)  := by rfl
+        _ = plus p (plus (mult m p) (mult n p)) := by
+            have h := congrArg (λ σ => plus p σ) ih
+            exact h
+        _ = plus (plus p (mult m p)) (mult n p) := by
+            symm
+            have h := plusAssoc p (mult m p) (mult n p)
+            exact h
+            -- from the penultimate (previous) shape:
+            -- _ = plus (plus p (mult m p)) (mult n p)
+            -- we can obtain via second ctor of mult, this:
+        _ = plus (mult (.suc m) p) (mult n p) := by rfl
+            -- which is dischargeable/checkable via rfl
+```
 :::
